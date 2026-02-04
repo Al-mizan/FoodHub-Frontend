@@ -1,7 +1,6 @@
 import * as React from "react"
 import { ChevronRight } from "lucide-react"
 
-import { SearchForm } from "@/components/layout/search-form"
 // import {
 //   Collapsible,
 //   CollapsibleContent,
@@ -14,7 +13,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -94,9 +92,9 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
-      <SidebarHeader>
+      {/* <SidebarHeader>
         <SearchForm />
-      </SidebarHeader>
+      </SidebarHeader> */}
       <SidebarContent className="gap-0">
         {/* We create a collapsible SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
