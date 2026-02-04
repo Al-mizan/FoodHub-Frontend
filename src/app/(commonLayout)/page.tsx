@@ -1,11 +1,15 @@
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import Cuisines from "./cuisines";
+import Brands from "./brands";
+import Dishes from "./dishes";
 
 export default function Home() {
   return (
     <div>
-      <Button variant="default">
-        This is beginning
-      </Button>
+      <Input placeholder="Enter text" />
+      <Cuisines />
+      <Brands />
+      <Dishes />
     </div>
   );
 }

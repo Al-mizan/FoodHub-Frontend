@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
-  NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
@@ -73,7 +72,7 @@ const Navbar = ({
   className,
 }: NavbarProps) => {
   return (
-    <section className={cn("py-4", className)}>
+    <section className={cn("sticky top-0 z-50 bg-background py-4", className)}>
       <div className="container mx-auto px-4">
         {/* Desktop Menu */}
         <nav className="hidden items-center justify-between lg:flex">
@@ -90,12 +89,12 @@ const Navbar = ({
               </span>
             </a>
             <div className="flex items-center ml-30">
-              <NavigationMenu>
-                <Button variant="ghost" className="flex items-center gap-1">
+              <Button asChild variant="ghost" className="flex items-center gap-1">
+                <Link href="/address">
                   <MapPin className="size-4" />
                   <span>Address</span>
-                </Button>
-              </NavigationMenu>
+                </Link>
+              </Button>
             </div>
           </div>
           <div className="flex items-center gap-2">
