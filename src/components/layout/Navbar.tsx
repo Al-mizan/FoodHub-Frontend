@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Menu, ShoppingCart } from "lucide-react";
+import { MapPin, Menu } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,10 @@ import {
 } from "@/components/ui/sheet";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
+import { useAuth } from "@/hooks/useAuth";
+import { UserMenu } from "@/components/modules/authentication/UserMenu";
+import { CartIcon } from "@/components/modules/homepage/CartIcon";
+import { AddressModal } from "@/components/modules/homepage/AddressModal";
 
 interface MenuItem {
   title: string;
@@ -65,12 +69,14 @@ const Navbar = ({
       url: "/address",
     }
   ],
-  auth = {
+  auth: authConfig = {
     login: { title: "Login", url: "/login" },
     signup: { title: "Register", url: "/register" },
   },
   className,
 }: NavbarProps) => {
+  const { isAuthenticated, isPending } = useAuth();
+  
   return (
     <section className={cn("sticky top-0 z-50 bg-background py-4", className)}>
       <div className="container mx-auto px-4">
@@ -88,29 +94,29 @@ const Navbar = ({
                 {logo.title}
               </span>
             </a>
-            <div className="flex items-center ml-30">
-              <Button asChild variant="ghost" className="flex items-center gap-1">
-                <Link href="/address">
-                  <MapPin className="size-4" />
-                  <span>Address</span>
-                </Link>
-              </Button>
-            </div>
+            {isAuthenticated && (
+              <div className="flex items-center ml-30">
+                <AddressModal />
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="size-5" />
-              <span className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-                5     {/* // Example item count */}
-              </span>
-            </Button>
+            <CartIcon />
             <ModeToggle />
-            <Button asChild variant="outline" size="sm">
-              <Link href={auth.login.url}>{auth.login.title}</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href={auth.signup.url}>{auth.signup.title}</Link>
-            </Button>
+            {isPending ? (
+              <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
+            ) : isAuthenticated ? (
+              <UserMenu />
+            ) : (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link href={authConfig.login.url}>{authConfig.login.title}</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link href={authConfig.signup.url}>{authConfig.signup.title}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
 
@@ -125,44 +131,56 @@ const Navbar = ({
                 alt={logo.alt}
               />
             </a>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="size-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
-                      <img
-                        src={logo.src}
-                        className="max-h-8 dark:invert"
-                        alt={logo.alt}
-                      />
-                    </a>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-6 p-4">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
-                  >
-                    {menu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion>
+            <div className="flex items-center gap-2">
+              <CartIcon />
+              {isAuthenticated && <UserMenu />}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Menu className="size-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>
+                      <a href={logo.url} className="flex items-center gap-2">
+                        <img
+                          src={logo.src}
+                          className="max-h-8 dark:invert"
+                          alt={logo.alt}
+                        />
+                      </a>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="flex flex-col gap-6 p-4">
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="flex w-full flex-col gap-4"
+                    >
+                      {menu.map((item) => renderMobileMenuItem(item))}
+                    </Accordion>
 
-                  <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <Link href={auth.login.url}>{auth.login.title}</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                    </Button>
+                    {isAuthenticated ? (
+                      <div className="flex flex-col gap-3">
+                        <AddressModal />
+                        <ModeToggle />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-3">
+                        <Button asChild variant="outline">
+                          <Link href={authConfig.login.url}>{authConfig.login.title}</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link href={authConfig.signup.url}>{authConfig.signup.title}</Link>
+                        </Button>
+                        <ModeToggle />
+                      </div>
+                    )}
                   </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>

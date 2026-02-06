@@ -9,56 +9,60 @@ export interface Artwork {
 export const works: Artwork[] = [
     {
         artist: "Pizza",
-        art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/73.png",
     },
     {
         artist: "Burger",
-        art: "https://images.unsplash.com/photo-1548516173-3cabfa4607e9?auto=format&fit=crop&w=300&q=80",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/85.png",
     },
     {
         artist: "Pasta",
-        art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/103.png",
     },
     {
-        artist: "Chinese",
-        art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
+        artist: "Cakes",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/77.png",
     },
     {
         artist: "Mexican",
-        art: "https://images.unsplash.com/photo-1548516173-3cabfa4607e9?auto=format&fit=crop&w=300&q=80",
+        art: "https://hips.hearstapps.com/hmg-prod/images/pozole-index-655b86b9eeb3f.jpg?crop=0.502xw:1.00xh;0.0529xw,0&resize=1200",
     },
     {
-        artist: "Indian",
-        art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
+        artist: "Kababs",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/132.png",
     },
     {
         artist: "Bangladeshi",
-        art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
+        art: "https://static.vecteezy.com/system/resources/thumbnails/056/737/597/small/delicious-indian-thali-feast-restaurant-food-indoor-close-up-png.png",
     },
     {
-        artist: "Biriyani",
-        art: "https://images.unsplash.com/photo-1548516173-3cabfa4607e9?auto=format&fit=crop&w=300&q=80",
+        artist: "Biryani",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/193.png",
     },
     {
-        artist: "Thai",
-        art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
+        artist: "Breakfast",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/106.png",
     },
     {
-        artist: "Japanese",
-        art: "https://images.unsplash.com/photo-1465869185982-5a1a7522cbcb?auto=format&fit=crop&w=300&q=80",
+        artist: "Chinese",
+        art: "https://static.vecteezy.com/system/resources/thumbnails/041/646/487/small/ai-generated-pad-thai-noodles-isolated-traditional-asian-street-food-png.png",
     },
     {
-        artist: "Mediterranean",
-        art: "https://images.unsplash.com/photo-1548516173-3cabfa4607e9?auto=format&fit=crop&w=300&q=80",
+        artist: "Snacks",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/122.png",
     },
     {
-        artist: "French",
-        art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
+        artist: "Sweets",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/249.png",
     },
     {
-        artist: "Korean",
-        art: "https://images.unsplash.com/photo-1494337480532-3725c85fd2ab?auto=format&fit=crop&w=300&q=80",
+        artist: "Chicken",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/100.png",
     },
+    {
+        artist: "Fast Food",
+        art: "https://images.deliveryhero.io/image/foodpanda/cuisine-images/bd/86.png",
+    }
 ]
 
 export default function Cuisines() {
