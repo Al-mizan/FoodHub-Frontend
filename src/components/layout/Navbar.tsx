@@ -94,11 +94,11 @@ const Navbar = ({
                 {logo.title}
               </span>
             </a>
-            {isAuthenticated && (
+            {/* {isAuthenticated && ( */}
               <div className="flex items-center ml-30">
                 <AddressModal />
               </div>
-            )}
+            {/* )} */}
           </div>
           <div className="flex items-center gap-2">
             <CartIcon />

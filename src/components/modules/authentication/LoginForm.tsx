@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 
 
 import * as z from "zod";
+import { env } from "@/env";
 
 const formSchema = z.object({
   email: z.email(),
@@ -31,7 +32,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   const handleGoogleLogin = async () => {
     const data = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "http://localhost:3000"
+      callbackURL:  env.FRONTEND_API
     });
     console.log(data);
   };

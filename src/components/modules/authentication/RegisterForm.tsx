@@ -18,6 +18,7 @@ import Link from "next/link";
 
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+import { env } from "@/env";
 
 const formSchema = z.object({
   name: z.string().min(2, "This field is required"),
@@ -35,7 +36,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
   const handleGoogleLogin = async () => {
     const data = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "http://localhost:3000"
+      callbackURL: env.FRONTEND_API
     });
     console.log(data);
   };
