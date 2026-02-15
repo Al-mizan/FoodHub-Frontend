@@ -56,7 +56,7 @@ export function AddressModal({ trigger }: AddressModalProps) {
     const defaultTrigger = (
         <Button variant="ghost" className="flex items-center gap-1">
             <MapPin className="size-4" />
-            <span>Address</span>
+            <span>{profile?.address || "Set Address"}</span>
         </Button>
     );
 

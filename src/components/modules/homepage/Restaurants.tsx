@@ -5,6 +5,7 @@ import { Star, Clock, Bike } from "lucide-react";
 import { restaurantsService } from "@/services/restaurants.service";
 import Image from "next/image";
 import { Restaurant } from "@/types";
+import Link from "next/link";
 
 //     id                  String   @id @default(uuid())
 //     user_id             String   @unique
@@ -105,7 +106,6 @@ function RestaurantCard({
 }
 
 export default function Restaurants() {
-    console.log(restaurants.data);
     return (
         <section className="py-8">
             {/* Section Header */}
@@ -115,9 +115,11 @@ export default function Restaurants() {
                         All restaurants
                     </h2>
                 </div>
-                <Button variant="outline" className="hidden sm:flex">
-                    View All
-                </Button>
+                <Link href="/restaurants" className="hidden sm:inline-flex">
+                    <Button variant="outline" className="cursor-pointer">
+                        View All
+                    </Button>
+                </Link>
             </div>
 
             {/* Restaurants Grid */}
@@ -126,15 +128,19 @@ export default function Restaurants() {
                     <p className="text-red-500">{restaurants?.error?.message}</p>
                 ) : null}
                 {restaurants?.data?.map((restaurant: Restaurant) => (
-                    <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+                    <Link key={restaurant.id} href={`/restaurants/${restaurant.id}`}>
+                        <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+                    </Link>
                 ))}
             </div>
 
             {/* Mobile View All Button */}
             <div className="mt-6 flex justify-center sm:hidden">
-                <Button variant="outline" className="w-full max-w-xs">
-                    View All Restaurants
-                </Button>
+                <Link href="/restaurants">
+                    <Button variant="outline" className="w-full max-w-xs">
+                        View All Restaurants
+                    </Button>
+                </Link>
             </div>
         </section>
     );

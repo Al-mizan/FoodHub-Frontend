@@ -1,11 +1,27 @@
 import { env } from "@/env";
+import { Dish } from "@/types";
 
 const API_URL = env.API_URL;
 
+interface GetDishesParams {
+    search?: string;
+    cuisine_slug?: string;  // search by cuisine slug
+    page?: string;
+    limit?: string;
+}
+
 export const dishesService = {
-    getAllDishes: async () => {
+    getAllDishes: async (params?: GetDishesParams,) => {
         try {
-            const res = await fetch(`${API_URL}/api/meals`, {
+            const url = new URL(`${API_URL}/api/meals`);
+            if (params) {
+                Object.entries(params).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null && value !== '') {
+                        url.searchParams.append(key, String(value));
+                    }
+                });
+            }
+            const res = await fetch(url.toString(), {
                 cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
                 next:
                     process.env.NODE_ENV === "development"
@@ -20,6 +36,11 @@ export const dishesService = {
             }
             const dishes = await res.json();
             if (dishes.success) {
+                // if created_at is within last 30 days, then it's new
+                dishes.data = dishes?.data?.map((dish: Dish) => {
+                    const isNew = new Date(dish.created_at) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+                    return { ...dish, isNew };
+                });
                 return {
                     data: dishes.data,
                     error: null,
@@ -40,6 +61,7 @@ export const dishesService = {
             }
         }
     },
+
     getDishById: async (dishId: string) => {
         try {
             const res = await fetch(`${API_URL}/api/meals/${dishId}`, {
@@ -77,7 +99,8 @@ export const dishesService = {
             }
         }
     },
-    getDisheByRestaurant: async (restaurantId: string) => {
+
+    getDishesByRestaurant: async (restaurantId: string) => {
         try {
             const res = await fetch(`${API_URL}/api/providers/${restaurantId}/meals`, {
                 cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
@@ -114,7 +137,8 @@ export const dishesService = {
             }
         }
     },
-    getDisheByIdOfRestaurant: async (restaurantId: string, dishId: string) => {
+
+    getDishesByIdOfRestaurant: async (restaurantId: string, dishId: string) => {
         try {
             const res = await fetch(`${API_URL}/api/providers/${restaurantId}/meals/${dishId}`, {
                 cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
@@ -150,5 +174,5 @@ export const dishesService = {
                 details: error instanceof Error ? error.message : String(error),
             }
         }
-    }
+    },
 }
