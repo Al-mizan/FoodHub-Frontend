@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { useAuth } from "@/hooks/useAuth";
 import { env } from "@/env";
 
-const API_BASE_URL = env.API_URL;
+const API_BASE_URL = env.NEXT_PUBLIC_API_URL;
 
 interface CartContextType {
     count: number;
