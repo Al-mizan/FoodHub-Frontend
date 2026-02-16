@@ -2,6 +2,8 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Navbar } from "@/components/layout/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
+// footer implementation is pending, will be added in future iterations when needed. For now, we focus on the main layout with navbar and sidebar.
+
 export default function CommonLayout({
     children,
 }: {

@@ -1,14 +1,12 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Star, Clock, Store } from "lucide-react";
+import { ShoppingCart, Star, Clock, Store, SearchX } from "lucide-react";
 import Link from "next/link";
 import { dishesService } from "@/services/dishes.service";
 import Image from "next/image";
 import { Dish } from "@/types";
 
-
-const dishesData = await dishesService.getAllDishes();
 
 // Star rating component
 function StarRating({ rating }: { rating: number }) {
@@ -97,11 +95,6 @@ function DishCard({
                 {/* Rating + Orders */}
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <StarRating rating={(Number(dish.rating_sum) / Number(dish.rating_count)) || 0} />
-
-                    {/* <div className="flex items-center gap-1.5">
-                        <TrendingUp className="size-4" />
-                        <span>{dish.ordersThisWeek}/week</span>
-                    </div> */}
                 </div>
 
                 {/* Restaurant & Delivery */}
@@ -133,21 +126,53 @@ function DishCard({
 }
 
 
-export default function Dishes() {
+interface DishesProps {
+    cuisineSlug?: string;
+    search?: string;
+}
+
+export default async function Dishes({ cuisineSlug, search }: DishesProps) {
+    const isFiltering = !!(cuisineSlug || search);
+
+    const dishesData = await dishesService.getAllDishes({
+        ...(cuisineSlug ? { cuisine_slug: cuisineSlug } : {}),
+        ...(search ? { search } : {}),
+    });
+
+    const title = search
+        ? `Results for "${search}"`
+        : cuisineSlug
+            ? `Dishes — ${cuisineSlug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`
+            : "Featured Dishes";
+
     return (
         <section className="py-8">
             {/* Section Header */}
             <div className="mb-6 flex items-center justify-between">
                 <div>
                     <h2 className="text-3xl font-medium tracking-tight">
-                        Featured Dishes
+                        {title}
                     </h2>
+                    {isFiltering && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                            {dishesData?.data?.length ?? 0} dish{(dishesData?.data?.length ?? 0) !== 1 ? "es" : ""} found
+                        </p>
+                    )}
                 </div>
-                <Link href="/meals" className="hidden sm:inline-flex">
-                    <Button variant="outline" className="cursor-pointer">
-                        View All
-                    </Button>
-                </Link>
+                {!isFiltering && (
+                    <Link href="/meals" className="hidden sm:inline-flex">
+                        <Button variant="outline" className="cursor-pointer">
+                            View All
+                        </Button>
+                    </Link>
+                )}
+                {isFiltering && (
+                    <Link href="/">
+                        <Button variant="outline" className="cursor-pointer">
+                            Clear Filters
+                        </Button>
+                    </Link>
+                )}
             </div>
 
             {/* Dishes Grid */}
@@ -157,21 +182,44 @@ export default function Dishes() {
                     <p className="text-red-500">{dishesData?.error?.message}</p>
                 ) : null}
 
-                {dishesData?.data?.map((dish: Dish) => (
-                    <Link key={dish.id} href={`/dishes/${dish.id}`}>
-                        <DishCard key={dish.id} dish={dish} />
-                    </Link>
-                ))}
+                {dishesData?.data && dishesData.data.length > 0 ? (
+                    dishesData.data.map((dish: Dish) => (
+                        <Link key={dish.id} href={`/meals/${dish.id}`}>
+                            <DishCard key={dish.id} dish={dish} />
+                        </Link>
+                    ))
+                ) : (
+                    !dishesData?.error?.message && (
+                        <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                            <SearchX className="size-16 text-muted-foreground/50 mb-4" />
+                            <h3 className="text-lg font-semibold text-muted-foreground">
+                                No dishes found
+                            </h3>
+                            <p className="text-sm text-muted-foreground/70 mt-1 max-w-md">
+                                {search
+                                    ? `We couldn't find any dishes matching "${search}". Try a different search term.`
+                                    : "No dishes available for this cuisine right now."}
+                            </p>
+                            <Link href="/" className="mt-4">
+                                <Button variant="outline" size="sm">
+                                    Browse All Meals
+                                </Button>
+                            </Link>
+                        </div>
+                    )
+                )}
             </div>
 
-            {/* Mobile View All Button */}
-            <div className="mt-6 flex justify-center sm:hidden">
-                <Link href="/meals" className="w-full max-w-xs">
-                    <Button variant="outline" className="w-full">
-                        View All Dishes
-                    </Button>
-                </Link>
-            </div>
+            {/* Mobile View All Button — only when not filtering */}
+            {!isFiltering && (
+                <div className="mt-6 flex justify-center sm:hidden">
+                    <Link href="/meals" className="w-full max-w-xs">
+                        <Button variant="outline" className="w-full">
+                            View All Dishes
+                        </Button>
+                    </Link>
+                </div>
+            )}
         </section>
     );
 }

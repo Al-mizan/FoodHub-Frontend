@@ -3,11 +3,16 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { cousinesService } from "@/services/cuisines.service"
 import { Cuisine } from "@/types";
 import Link from "next/link";
-
+import { cn } from "@/lib/utils";
+import { UtensilsCrossed } from "lucide-react";
 
 const cuisines = await cousinesService.getAllCousines();
 
-export default function Cuisines() {
+interface CuisinesProps {
+    activeCuisine?: string;
+}
+
+export default function Cuisines({ activeCuisine }: CuisinesProps) {
     return (
         <>
             <div className="font-medium text-3xl mt-4">Cuisines</div>
@@ -18,13 +23,51 @@ export default function Cuisines() {
                         <p className="text-red-500">{cuisines?.error?.message}</p>
                     ) : null}
 
-                    { /*if the image_url is not empty and is_active true holei show korbo, false holei show korbo na  */}
+                    {/* "All" button to clear cuisine filter */}
+                    {/* <Link href="/">
+                        <figure className="shrink-0 group">
+                            <div
+                                className={cn(
+                                    "overflow-hidden rounded-md w-28 h-28 flex items-center justify-center transition-all duration-300",
+                                    !activeCuisine
+                                        ? "ring-2 ring-primary bg-primary/10 scale-105"
+                                        : "bg-muted hover:bg-muted/80 hover:scale-105"
+                                )}
+                            >
+                                <UtensilsCrossed className={cn(
+                                    "size-12 transition-colors",
+                                    !activeCuisine ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                                )} />
+                            </div>
+                            <figcaption className="text-muted-foreground pt-2 text-xs">
+                                <span className={cn(
+                                    "font-semibold block transition-colors",
+                                    !activeCuisine ? "text-primary" : "text-foreground"
+                                )}>
+                                    All
+                                </span>
+                            </figcaption>
+                        </figure>
+                    </Link> */}
+
+                    {/* Cuisine items — stay on homepage, toggle filter via ?cuisines=slug */}
                     {cuisines?.data?.map((cuisine: Cuisine) => {
                         if (!cuisine.icon_url || !cuisine.is_active) return null;
+                        const isActive = activeCuisine === cuisine.slug;
+                        // Clicking active cuisine again clears the filter
+                        const href = isActive ? "/" : `/?cuisines=${cuisine.slug}`;
+
                         return (
-                            <Link key={cuisine.slug} href={`/dishes?cuisines=${cuisine.slug}`}>
-                                <figure className="shrink-0">
-                                    <div className="overflow-hidden rounded-md w-28 h-28">
+                            <Link key={cuisine.slug} href={href}>
+                                <figure className="shrink-0 group">
+                                    <div
+                                        className={cn(
+                                            "overflow-hidden rounded-md w-28 h-28 transition-all duration-300",
+                                            isActive
+                                                ? "ring-2 ring-primary scale-105"
+                                                : "hover:scale-105"
+                                        )}
+                                    >
                                         <Image
                                             src={cuisine.icon_url}
                                             alt={cuisine.name}
@@ -35,7 +78,10 @@ export default function Cuisines() {
                                         />
                                     </div>
                                     <figcaption className="text-muted-foreground pt-2 text-xs">
-                                        <span className="text-foreground font-semibold block">
+                                        <span className={cn(
+                                            "font-semibold block transition-colors",
+                                            isActive ? "text-primary" : "text-foreground"
+                                        )}>
                                             {cuisine.name}
                                         </span>
                                     </figcaption>
