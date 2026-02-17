@@ -1,16 +1,15 @@
 "use client";
 
-import { MapPin, Menu } from "lucide-react";
-
+import { Menu } from "lucide-react";
+import logoImage from "../../../public/assets/logoImage.ico";
 import { cn } from "@/lib/utils";
+import Image, { type StaticImageData } from "next/image";
 
 import {
   Accordion,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
-  NavigationMenuItem,
-  NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import {
   Sheet,
@@ -38,7 +37,7 @@ interface NavbarProps {
   className?: string;
   logo?: {
     url: string;
-    src: string;
+    src: string | StaticImageData;
     alt: string;
     title: string;
     className?: string;
@@ -59,9 +58,9 @@ interface NavbarProps {
 const Navbar = ({
   logo = {
     url: "/",
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
+    src: logoImage,
     alt: "logo",
-    title: "Shadcnblocks.com",
+    title: "FoodHub",
   },
   menu = [
     {
@@ -85,10 +84,12 @@ const Navbar = ({
           <div className="flex items-center gap-6">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
+              <Image
                 src={logo.src}
                 className="max-h-8 dark:invert"
                 alt={logo.alt}
+                width={32}
+                height={32}
               />
               <span className="text-lg font-semibold tracking-tighter">
                 {logo.title}
@@ -125,10 +126,12 @@ const Navbar = ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
+              <Image
                 src={logo.src}
                 className="max-h-8 dark:invert"
                 alt={logo.alt}
+                width={32}
+                height={32}
               />
             </a>
             <div className="flex items-center gap-2">
@@ -144,10 +147,12 @@ const Navbar = ({
                   <SheetHeader>
                     <SheetTitle>
                       <a href={logo.url} className="flex items-center gap-2">
-                        <img
+                        <Image
                           src={logo.src}
                           className="max-h-8 dark:invert"
                           alt={logo.alt}
+                          width={32}
+                          height={32}
                         />
                       </a>
                     </SheetTitle>
@@ -185,20 +190,6 @@ const Navbar = ({
         </div>
       </div>
     </section>
-  );
-};
-
-const renderMenuItem = (item: MenuItem) => {
-
-  return (
-    <NavigationMenuItem key={item.title}>
-      <NavigationMenuLink
-        asChild
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground"
-      >
-        <Link href={item.url}>{item.title}</Link>
-      </NavigationMenuLink>
-    </NavigationMenuItem>
   );
 };
 

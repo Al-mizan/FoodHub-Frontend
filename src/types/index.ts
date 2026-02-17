@@ -1,3 +1,9 @@
 export type { Restaurant } from "./restaurant.type";
 export type { Dish } from "./dish.type";
 export type { Cuisine } from "./cuisine.type";
+export type { HomeProps } from "./homeProps.type";
+export type { IdProps } from "./idProps.type";
+export type { Cart } from "./cart.type";
+export type { CartItem } from "./cartItem.type";
+export type { CartContextType } from "./cartContext.type";
+export type { CartItemMeal } from "./cartItemMeal.type";

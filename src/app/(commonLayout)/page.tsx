@@ -3,10 +3,8 @@ import Cuisines from "../../components/modules/homepage/Cuisines";
 import Dishes from "../../components/modules/homepage/Dishes";
 import Restaurants from "../../components/modules/homepage/Restaurants";
 import SearchBar from "../../components/modules/homepage/SearchBar";
+import { HomeProps } from "@/types";
 
-interface HomeProps {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
 
 export default async function Home({ searchParams }: HomeProps) {
     const params = await searchParams;
