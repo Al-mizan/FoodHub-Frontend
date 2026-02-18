@@ -7,3 +7,8 @@ export type { Cart } from "./cart.type";
 export type { CartItem } from "./cartItem.type";
 export type { CartContextType } from "./cartContext.type";
 export type { CartItemMeal } from "./cartItemMeal.type";
+export type { DishDetailModalProps } from "./dishDetailModalProps.type";
+export type { Order, OrderItem, OrderReview, OrderStatus, PaymentStatus, ProviderOrder } from "./order.type";
+export type { Review } from "./review.type";
+export type { ProviderProfile } from "./providerProfile.type";
+export type { Meal } from "./meal.type";

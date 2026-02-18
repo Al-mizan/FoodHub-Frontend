@@ -14,15 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Dish } from "@/types";
 import { useCart } from "@/providers/CartProvider";
 import { useAuth } from "@/hooks/useAuth";
+import { DishDetailModalProps } from "@/types";
 
-interface DishDetailModalProps {
-    dish: Dish;
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}
 
 export const DishDetailModal = memo(function DishDetailModal({
     dish,
@@ -34,8 +29,7 @@ export const DishDetailModal = memo(function DishDetailModal({
     const { addToCart } = useCart();
     const { isAuthenticated } = useAuth();
 
-    const rating =
-        Number(dish.rating_sum) / Number(dish.rating_count) || 0;
+    const rating = Number(dish.rating_sum) / Number(dish.rating_count) || 0;
 
     // dish.price is the final selling price; recover original when discounted
     const hasDiscount = !!dish.discount_percentage;

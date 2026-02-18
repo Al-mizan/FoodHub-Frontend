@@ -40,16 +40,36 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     /* ── Fetch count from backend ── */
     const fetchCartCount = useCallback(async () => {
-        if (!isAuthenticated) { setCount(0); return; }
-        const { ok, data } = await apiFetch<{ count: number }>(`${API_BASE_URL}/api/carts/count`);
-        if (ok && data) setCount(data.count);
+        if (!isAuthenticated) {
+            setCount(0);
+            return;
+        }
+
+        const { ok, data } = await apiFetch<{ count: number }>(`${API_BASE_URL}/api/carts/count`, {
+            method: "GET",
+            cache: "no-store",
+        });
+
+        if (ok && data) {
+            setCount(data.count);
+        }
     }, [isAuthenticated]);
 
     /* ── Fetch full carts from backend ── */
     const fetchCarts = useCallback(async () => {
-        if (!isAuthenticated) { setCarts([]); return; }
-        const { ok, data } = await apiFetch<Cart[]>(`${API_BASE_URL}/api/carts`);
-        if (ok && data) setCarts(data);
+        if (!isAuthenticated) {
+            setCarts([]);
+            return;
+        }
+
+        const { ok, data } = await apiFetch<Cart[]>(`${API_BASE_URL}/api/carts`, {
+            method: "GET",
+            cache: "no-store",
+        });
+
+        if (ok && data) {
+            setCarts(data);
+        }
     }, [isAuthenticated]);
 
     /* ── Sync helper: refetch count + carts together ── */
@@ -57,21 +77,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         await Promise.all([fetchCartCount(), fetchCarts()]);
     }, [fetchCartCount, fetchCarts]);
 
-    /* ── Initial load ── */
+    /* ── Initial load (deferred to avoid synchronous setState in effect) ── */
     useEffect(() => {
         if (authPending || hasFetched.current) return;
         hasFetched.current = true;
-        setIsLoading(true);
-        syncWithBackend().finally(() => setIsLoading(false));
+        const id = setTimeout(() => {
+            syncWithBackend().finally(() => setIsLoading(false));
+        }, 0);
+        return () => clearTimeout(id);
     }, [authPending, syncWithBackend]);
 
     /* Reset when user logs out */
     useEffect(() => {
         if (!authPending && !isAuthenticated) {
-            setCount(0);
-            setCarts([]);
-            setIsLoading(false);
             hasFetched.current = false;
+            const id = setTimeout(() => {
+                setCount(0);
+                setCarts([]);
+                setIsLoading(false);
+            }, 0);
+            return () => clearTimeout(id);
         }
     }, [authPending, isAuthenticated]);
 
@@ -79,18 +104,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const addToCart = useCallback(
         async (mealId: string, quantity: number): Promise<{ success: boolean; message?: string }> => {
-            // Optimistic update
-            setCount((prev) => prev + quantity);
-
             const { ok, message } = await apiFetch(`${API_BASE_URL}/api/carts`, {
                 method: "POST",
                 body: JSON.stringify({ meal_id: mealId, quantity }),
             });
 
-            // Always sync with backend for truth
+            // Keep UI and cart page fully in sync with backend data
             await syncWithBackend();
 
-            if (ok) return { success: true };
+            if (ok) {
+                return { success: true };
+            }
+
             return { success: false, message: message || "Failed to add to cart" };
         },
         [syncWithBackend],

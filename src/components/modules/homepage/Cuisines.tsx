@@ -4,7 +4,7 @@ import { cousinesService } from "@/services/cuisines.service"
 import { Cuisine } from "@/types";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { UtensilsCrossed } from "lucide-react";
+// import { UtensilsCrossed } from "lucide-react";
 
 const cuisines = await cousinesService.getAllCousines();
 

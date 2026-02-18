@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, User, Settings, MapPin, Loader2 } from "lucide-react";
+import { LogOut, User, Settings, MapPin, Loader2, ShoppingBag, ChefHat, Store } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,6 +108,10 @@ export function UserMenu() {
                         </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => router.push("/orders")}>
+                        <ShoppingBag className="mr-2 size-4" />
+                        <span>My Orders</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => router.push("/profile")}>
                         <User className="mr-2 size-4" />
                         <span>Profile</span>
@@ -116,10 +120,19 @@ export function UserMenu() {
                         <MapPin className="mr-2 size-4" />
                         <span>Address</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/settings")}>
-                        <Settings className="mr-2 size-4" />
-                        <span>Settings</span>
-                    </DropdownMenuItem>
+                    {user.role === "PROVIDER" && (
+                        <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => router.push("/provider/meals")}>
+                                <ChefHat className="mr-2 size-4" />
+                                <span>Manage Meals</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push("/provider/orders")}>
+                                <Store className="mr-2 size-4" />
+                                <span>Provider Orders</span>
+                            </DropdownMenuItem>
+                        </>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                         <LogOut className="mr-2 size-4" />
