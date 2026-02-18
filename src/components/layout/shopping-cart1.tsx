@@ -69,7 +69,7 @@ const ShoppingCart1 = ({
         <div className="container max-w-lg text-center">
           <h1 className="mb-4 text-2xl font-semibold">Your cart is empty</h1>
           <p className="mb-8 text-muted-foreground">
-            Looks like you haven't added anything yet.
+            Looks like you haven&apos;t added anything yet.
           </p>
           <Button asChild>
             <a href="#">Continue Shopping</a>

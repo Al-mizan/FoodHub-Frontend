@@ -1,6 +1,6 @@
 export type { Restaurant } from "./restaurant.type";
 export type { Dish } from "./dish.type";
-export type { Cuisine } from "./cuisine.type";
+export type { Cuisine, Category } from "./cuisine.type";
 export type { HomeProps } from "./homeProps.type";
 export type { IdProps } from "./idProps.type";
 export type { Cart } from "./cart.type";
@@ -12,3 +12,5 @@ export type { Order, OrderItem, OrderReview, OrderStatus, PaymentStatus, Provide
 export type { Review } from "./review.type";
 export type { ProviderProfile } from "./providerProfile.type";
 export type { Meal } from "./meal.type";
+export type { AuthUser } from "./authUser.type";
+export type { AdminUser, AdminOrder, AdminCategory } from "./admin.type";

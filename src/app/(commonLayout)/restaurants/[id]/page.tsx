@@ -7,16 +7,17 @@ import RestaurantMealsClient from "@/components/modules/restaurants/RestaurantMe
 export default async function SpecificRestaurant({ params }: IdProps) {
     const { id } = await params;
 
-    const [restaurantResult, mealsResult] = await Promise.all([
-        restaurantsService.getRestaurantById(id),
-        dishesService.getDishesByRestaurant(id, { page: "1", limit: "10" }),
-    ]);
+    const restaurantResult = await restaurantsService.getRestaurantById(id);
 
     if (restaurantResult.error || !restaurantResult.data) {
         notFound();
     }
 
     const restaurant = restaurantResult.data;
+
+    // Use user_id (not profile id) since meals.provider_id references the User model
+    const mealsResult = await dishesService.getDishesByRestaurant(restaurant.user_id, { page: "1", limit: "10" });
+
     const initialMeals: Dish[] = (mealsResult.data ?? []).map((dish: Dish) => ({
         ...dish,
         restaurant_name: dish.restaurant_name ?? restaurant.restaurant_name,

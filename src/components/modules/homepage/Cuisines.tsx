@@ -50,12 +50,12 @@ export default function Cuisines({ activeCuisine }: CuisinesProps) {
                         </figure>
                     </Link> */}
 
-                    {/* Cuisine items — stay on homepage, toggle filter via ?cuisines=slug */}
+                    {/* Cuisine items — stay on homepage, toggle filter via ?cuisines=name */}
                     {cuisines?.data?.map((cuisine: Cuisine) => {
                         if (!cuisine.icon_url || !cuisine.is_active) return null;
-                        const isActive = activeCuisine === cuisine.slug;
+                        const isActive = activeCuisine === cuisine.name;
                         // Clicking active cuisine again clears the filter
-                        const href = isActive ? "/" : `/?cuisines=${cuisine.slug}`;
+                        const href = isActive ? "/" : `/?cuisines=${encodeURIComponent(cuisine.name)}`;
 
                         return (
                             <Link key={cuisine.slug} href={href}>

@@ -1,18 +1,8 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
+import { AuthUser } from "@/types";
 
-type AuthUser = {
-    id: string;
-    name: string;
-    email: string;
-    emailVerified: boolean;
-    image?: string | null;
-    role?: string;
-    phone?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-};
 
 export function useAuth() {
     const { data: session, isPending, error } = authClient.useSession();

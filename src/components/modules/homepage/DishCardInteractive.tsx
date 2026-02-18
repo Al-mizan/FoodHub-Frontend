@@ -15,13 +15,12 @@ function StarRating({ rating }: { rating: number }) {
             {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                     key={star}
-                    className={`size-4 ${
-                        star <= Math.floor(rating)
+                    className={`size-4 ${star <= Math.floor(rating)
                             ? "fill-yellow-400 text-yellow-400"
                             : star - 0.5 <= rating
-                              ? "fill-yellow-400/50 text-yellow-400"
-                              : "fill-muted text-muted-foreground"
-                    }`}
+                                ? "fill-yellow-400/50 text-yellow-400"
+                                : "fill-muted text-muted-foreground"
+                        }`}
                 />
             ))}
             <span className="ml-1 text-sm font-medium text-muted-foreground">
@@ -85,27 +84,26 @@ export const DishCardInteractive = memo(function DishCardInteractive({
                         {/* Price Row */}
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                {dish.discount_percentage ? (
+                                {dish.discount_percentage && dish.discount_percentage > 0 ? (
                                     <span className="text-lg font-bold text-primary">
                                         ৳
                                         {(
-                                            dish.price /
+                                            dish.price *
                                             (1 -
                                                 dish.discount_percentage / 100)
                                         ).toFixed(2)}
                                     </span>
                                 ) : null}
                                 <span
-                                    className={`${
-                                        dish.discount_percentage
+                                    className={`${dish.discount_percentage
                                             ? "text-xs text-muted-foreground line-through"
                                             : "text-lg font-bold text-primary"
-                                    }`}
+                                        }`}
                                 >
                                     ৳{dish.price.toFixed(2)}
                                 </span>
                             </div>
-                            {dish.discount_percentage ? (
+                            {dish.discount_percentage && dish.discount_percentage > 0 ? (
                                 <Badge
                                     variant="outline"
                                     className="border-rose-200 bg-rose-50 text-rose-600 text-[11px] font-semibold"
@@ -113,6 +111,13 @@ export const DishCardInteractive = memo(function DishCardInteractive({
                                     -{dish.discount_percentage}%
                                 </Badge>
                             ) : null}
+                            {
+                                dish.discount_price != null && dish.discount_price > 0 ? (
+                                    <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-600 text-[11px] font-semibold">
+                                        -&#2547;{dish.discount_price.toFixed(2)}
+                                    </Badge>
+                                ) : null
+                            }
                         </div>
 
                         {/* Rating */}
@@ -120,7 +125,7 @@ export const DishCardInteractive = memo(function DishCardInteractive({
                             <StarRating
                                 rating={
                                     Number(dish.rating_sum) /
-                                        Number(dish.rating_count) || 0
+                                    Number(dish.rating_count) || 0
                                 }
                             />
                         </div>

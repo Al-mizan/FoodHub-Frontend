@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useForm } from "@tanstack/react-form";
 import { useAuth } from "@/hooks/useAuth";
 import { providerClientService } from "@/services/provider-client.service";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,13 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     ChefHat,
     Plus,
     Pencil,
@@ -26,22 +34,57 @@ import {
     Star,
     DollarSign,
     AlertTriangle,
+    Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { env } from "@/env";
+import { Category, Meal } from "@/types";
+import Image from "next/image";
 
-interface Meal {
-    id: string;
-    name: string;
-    description?: string | null;
-    price: number;
-    discount_price?: number | null;
-    image_url?: string | null;
-    is_available: boolean;
-    rating_sum: number;
-    rating_count: number;
-    category_id?: string | null;
-    category?: { id: string; name: string } | null;
+const API_URL = env.NEXT_PUBLIC_API_URL;
+
+
+/* ── Fetch categories for dropdown ── */
+async function fetchCategories(): Promise<Category[]> {
+    try {
+        const res = await fetch(`${API_URL}/api/categories`, {
+            credentials: "include",
+        });
+        const json = await res.json();
+        if (res.ok && json.success) return json.data ?? [];
+    } catch {
+        /* ignore */
+    }
+    return [];
+}
+
+/* ── Meal form default values from meal or empty ── */
+function getMealFormDefaults(meal?: Meal | null) {
+    if (meal) {
+        return {
+            name: meal.name || "",
+            description: meal.description || "",
+            price: String(meal.price ?? ""),
+            discount_price: meal.discount_price != null ? String(meal.discount_price) : "",
+            discount_percentage: meal.discount_percentage != null ? String(meal.discount_percentage) : "",
+            image_url: meal.image_url || "",
+            category_id: meal.category_id || "",
+            preparation_time: meal.preparation_time != null ? String(meal.preparation_time) : "",
+            is_available: meal.is_available,
+        };
+    }
+    return {
+        name: "",
+        description: "",
+        price: "",
+        discount_price: "",
+        discount_percentage: "",
+        image_url: "",
+        category_id: "",
+        preparation_time: "",
+        is_available: true,
+    };
 }
 
 /* ── Meal Form Dialog ── */
@@ -59,87 +102,70 @@ function MealFormDialog({
     onSuccess: () => void;
 }) {
     const isEdit = !!meal;
-    const [formData, setFormData] = useState({
-        name: "",
-        description: "",
-        price: "",
-        discount_price: "",
-        image_url: "",
-        is_available: true,
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [categories, setCategories] = useState<Category[]>([]);
 
+    // Load categories when dialog opens
     useEffect(() => {
-        if (meal) {
-            setFormData({
-                name: meal.name || "",
-                description: meal.description || "",
-                price: String(meal.price || ""),
-                discount_price: meal.discount_price ? String(meal.discount_price) : "",
-                image_url: meal.image_url || "",
-                is_available: meal.is_available,
-            });
-        } else {
-            setFormData({
-                name: "",
-                description: "",
-                price: "",
-                discount_price: "",
-                image_url: "",
-                is_available: true,
-            });
+        if (open) {
+            fetchCategories().then(setCategories);
         }
-    }, [meal, open]);
+    }, [open]);
 
-    const handleChange = (field: string, value: string | boolean) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-    };
+    const form = useForm({
+        formId: open ? (meal?.id ?? "new") : "closed",
+        defaultValues: getMealFormDefaults(meal),
+        onSubmit: async ({ value }) => {
+            if (!value.name.trim()) {
+                toast.error("Meal name is required");
+                return;
+            }
+            if (!value.price || Number(value.price) <= 0) {
+                toast.error("Valid price is required");
+                return;
+            }
+            if (!value.category_id) {
+                toast.error("Please select a category");
+                return;
+            }
+            if (!value.preparation_time || Number(value.preparation_time) <= 0) {
+                toast.error("Preparation time is required");
+                return;
+            }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!formData.name.trim()) {
-            toast.error("Meal name is required");
-            return;
-        }
-        if (!formData.price || Number(formData.price) <= 0) {
-            toast.error("Valid price is required");
-            return;
-        }
-
-        setIsSubmitting(true);
-        try {
             const payload: Record<string, unknown> = {
-                name: formData.name.trim(),
-                description: formData.description.trim() || undefined,
-                price: Number(formData.price),
-                image_url: formData.image_url.trim() || undefined,
-                is_available: formData.is_available,
+                name: value.name.trim(),
+                description: value.description.trim() || undefined,
+                price: Number(value.price),
+                image_url: value.image_url.trim() || undefined,
+                category_id: value.category_id,
+                preparation_time: Number(value.preparation_time),
+                is_available: value.is_available,
             };
-            if (formData.discount_price) {
-                payload.discount_price = Number(formData.discount_price);
+            if (value.discount_price) {
+                payload.discount_price = Number(value.discount_price);
+            }
+            if (value.discount_percentage) {
+                payload.discount_percentage = Number(value.discount_percentage);
             }
 
             if (isEdit) {
                 await providerClientService.updateMeal(providerId, meal!.id, payload);
                 toast.success("Meal updated successfully!");
             } else {
-                await providerClientService.createMeal(providerId, payload as Parameters<typeof providerClientService.createMeal>[1]);
+                await providerClientService.createMeal(providerId, payload as unknown as Meal);
                 toast.success("Meal created successfully!");
             }
 
             onOpenChange(false);
             onSuccess();
-        } catch (err) {
-            toast.error(err instanceof Error ? err.message : "Operation failed");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+        },
+    });
+
+    const isSubmitting = form.state.isSubmitting;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         {isEdit ? "Edit Meal" : "Add New Meal"}
@@ -150,73 +176,169 @@ function MealFormDialog({
                             : "Fill in the details to add a new meal."}
                     </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="meal-name">Meal Name *</Label>
-                        <Input
-                            id="meal-name"
-                            value={formData.name}
-                            onChange={(e) => handleChange("name", e.target.value)}
-                            placeholder="e.g. Chicken Biryani"
-                            required
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="meal-desc">Description</Label>
-                        <Textarea
-                            id="meal-desc"
-                            value={formData.description}
-                            onChange={(e) => handleChange("description", e.target.value)}
-                            placeholder="Describe the meal..."
-                            rows={2}
-                        />
-                    </div>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        form.handleSubmit();
+                    }}
+                    className="space-y-4"
+                >
+                    <form.Field name="name">
+                        {(field) => (
+                            <div className="space-y-2">
+                                <Label htmlFor="meal-name">Meal Name *</Label>
+                                <Input
+                                    id="meal-name"
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    placeholder="e.g. Chicken Biryani"
+                                    required
+                                />
+                            </div>
+                        )}
+                    </form.Field>
+                    <form.Field name="description">
+                        {(field) => (
+                            <div className="space-y-2">
+                                <Label htmlFor="meal-desc">Description</Label>
+                                <Textarea
+                                    id="meal-desc"
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    placeholder="Describe the meal..."
+                                    rows={2}
+                                />
+                            </div>
+                        )}
+                    </form.Field>
+                    <form.Field name="category_id">
+                        {(field) => (
+                            <div className="space-y-2">
+                                <Label htmlFor="meal-category">Category *</Label>
+                                <Select
+                                    value={field.state.value}
+                                    onValueChange={(val) => field.handleChange(val)}
+                                >
+                                    <SelectTrigger id="meal-category">
+                                        <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {categories.map((cat) => (
+                                            <SelectItem key={cat.id} value={cat.id}>
+                                                {cat.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+                    </form.Field>
                     <div className="grid gap-4 grid-cols-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="meal-price">Price (৳) *</Label>
-                            <Input
-                                id="meal-price"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={formData.price}
-                                onChange={(e) => handleChange("price", e.target.value)}
-                                placeholder="0.00"
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="meal-discount">Discount Price (৳)</Label>
-                            <Input
-                                id="meal-discount"
-                                type="number"
-                                step="0.01"
-                                min="0"
-                                value={formData.discount_price}
-                                onChange={(e) => handleChange("discount_price", e.target.value)}
-                                placeholder="0.00"
-                            />
-                        </div>
+                        <form.Field name="price">
+                            {(field) => (
+                                <div className="space-y-2">
+                                    <Label htmlFor="meal-price">Price (&#2547;) *</Label>
+                                    <Input
+                                        id="meal-price"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={field.state.value}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) => field.handleChange(e.target.value)}
+                                        placeholder="0.00"
+                                        required
+                                    />
+                                </div>
+                            )}
+                        </form.Field>
+                        <form.Field name="discount_price">
+                            {(field) => (
+                                <div className="space-y-2">
+                                    <Label htmlFor="meal-discount">Discount Price (&#2547;)</Label>
+                                    <Input
+                                        id="meal-discount"
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        value={field.state.value}
+                                        onBlur={field.handleBlur}
+                                        onChange={(e) => field.handleChange(e.target.value)}
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                            )}
+                        </form.Field>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="meal-image">Image URL</Label>
-                        <Input
-                            id="meal-image"
-                            value={formData.image_url}
-                            onChange={(e) => handleChange("image_url", e.target.value)}
-                            placeholder="https://..."
-                        />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            id="meal-available"
-                            checked={formData.is_available}
-                            onChange={(e) => handleChange("is_available", e.target.checked)}
-                            className="size-4 rounded border"
-                        />
-                        <Label htmlFor="meal-available">Available for ordering</Label>
-                    </div>
+                    <form.Field name="discount_percentage">
+                        {(field) => (
+                            <div className="space-y-2">
+                                <Label htmlFor="meal-discount-pct">Discount Percentage (%)</Label>
+                                <Input
+                                    id="meal-discount-pct"
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    max="100"
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    placeholder="e.g. 10"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Enter either a flat discount price or a percentage — both are optional.
+                                </p>
+                            </div>
+                        )}
+                    </form.Field>
+                    <form.Field name="preparation_time">
+                        {(field) => (
+                            <div className="space-y-2">
+                                <Label htmlFor="meal-prep-time">Preparation Time (minutes) *</Label>
+                                <Input
+                                    id="meal-prep-time"
+                                    type="number"
+                                    min="1"
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    placeholder="e.g. 30"
+                                    required
+                                />
+                            </div>
+                        )}
+                    </form.Field>
+                    <form.Field name="image_url">
+                        {(field) => (
+                            <div className="space-y-2">
+                                <Label htmlFor="meal-image">Image URL</Label>
+                                <Input
+                                    id="meal-image"
+                                    value={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => field.handleChange(e.target.value)}
+                                    placeholder="https://..."
+                                />
+                            </div>
+                        )}
+                    </form.Field>
+                    <form.Field name="is_available">
+                        {(field) => (
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    id="meal-available"
+                                    checked={field.state.value}
+                                    onBlur={field.handleBlur}
+                                    onChange={(e) => field.handleChange(e.target.checked)}
+                                    className="size-4 rounded border"
+                                />
+                                <Label htmlFor="meal-available">Available for ordering</Label>
+                            </div>
+                        )}
+                    </form.Field>
                     <DialogFooter>
                         <Button
                             type="button"
@@ -292,12 +414,23 @@ function MealCard({
             ? (meal.rating_sum / meal.rating_count).toFixed(1)
             : null;
 
+    // Calculate the final price after discount
+    let finalPrice: number | null = null;
+    if (meal.discount_price != null && meal.discount_price > 0) {
+        finalPrice = meal.price - meal.discount_price;
+    }
+    if (meal.discount_percentage != null && meal.discount_percentage > 0) {
+        finalPrice = meal.price * (1 - (meal.discount_percentage / 100));
+    }
+
     return (
         <div className="flex gap-4 rounded-xl border bg-card p-4 transition-shadow hover:shadow-md">
-            <img
+            <Image
                 src={meal.image_url || "/placeholder.png"}
                 alt={meal.name}
                 className="size-20 shrink-0 rounded-lg object-cover"
+                width={80}
+                height={80}
             />
             <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-2">
@@ -313,14 +446,39 @@ function MealCard({
                         {meal.is_available ? "Available" : "Unavailable"}
                     </Badge>
                 </div>
-                <div className="mt-2 flex items-center gap-3">
-                    <span className="flex items-center text-sm font-semibold">
-                        <DollarSign className="mr-0.5 size-3" />
-                        ৳{meal.price.toFixed(2)}
-                    </span>
-                    {meal.discount_price && (
-                        <span className="text-xs text-green-600">
-                            Sale: ৳{meal.discount_price.toFixed(2)}
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                    {finalPrice != null ? (
+                        <>
+                            <span className="flex items-center text-sm font-semibold text-primary">
+                                {/* <DollarSign className="mr-0.5 size-3" /> */}
+                                &#2547;{finalPrice.toFixed(2)}
+                            </span>
+                            <span className="text-xs text-muted-foreground line-through">
+                                &#2547;{meal.price.toFixed(2)}
+                            </span>
+                            {meal.discount_percentage != null && meal.discount_percentage > 0 && (
+                                <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-600 text-[11px]">
+                                    -{meal.discount_percentage}%
+                                </Badge>
+                            )}
+                            {
+                                meal.discount_price != null && meal.discount_price > 0 && (
+                                    <Badge variant="outline" className="border-rose-200 bg-rose-50 text-rose-600 text-[11px]">
+                                        -&#2547;{meal.discount_price.toFixed(2)}
+                                    </Badge>
+                                )
+                            }
+                        </>
+                    ) : (
+                        <span className="flex items-center text-sm font-semibold">
+                            {/* <DollarSign className="mr-0.5 size-3" /> */}
+                            &#2547;{meal.price.toFixed(2)}
+                        </span>
+                    )}
+                    {meal.preparation_time && (
+                        <span className="flex items-center gap-0.5 text-sm text-muted-foreground">
+                            <Clock className="size-3" />
+                            {meal.preparation_time} min
                         </span>
                     )}
                     {avgRating && (

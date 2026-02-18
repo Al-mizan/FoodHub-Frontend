@@ -5,3 +5,9 @@ export interface Cuisine {
     icon_url: string
     is_active: boolean
 }
+export interface Category {
+    id: string;
+    name: string;
+    slug: string;
+    is_active: boolean;
+}

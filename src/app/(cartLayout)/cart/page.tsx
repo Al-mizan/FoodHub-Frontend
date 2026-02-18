@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ import { toast } from "sonner";
 /* ── Map backend Cart[] to flat CartItemDisplay[] ── */
 function useCartItems(): CartItemDisplay[] {
     const { carts } = useCart();
+
     return useMemo(() => {
         const items: CartItemDisplay[] = [];
         for (const cart of carts) {
@@ -246,6 +248,34 @@ function CheckoutPanel({
                 </CollapsibleContent>
             </Collapsible>
 
+            {/* Payment Method - COD Only */}
+            <div className="space-y-2">
+                <Label className="text-base font-semibold">Payment Method</Label>
+
+                <div className="flex items-center gap-3 rounded-xl border bg-muted/40 px-4 py-3 cursor-not-allowed">
+                    <Input
+                        type="radio"
+                        id="cod"
+                        name="payment-method"
+                        value="cod"
+                        defaultChecked
+                        disabled
+                        className="size-4"
+                    />
+                    <Label
+                        htmlFor="cod"
+                        className="flex flex-col items-start text-left leading-none cursor-not-allowed"
+                    >
+                        <span className="font-medium text-sm text-left">
+                            Cash on Delivery (COD)
+                        </span>
+                        <span className="text-xs text-muted-foreground text-left">
+                            Pay with cash when your order arrives
+                        </span>
+                    </Label>
+                </div>
+            </div>
+
             <div className="space-y-3 pt-2">
                 <Button
                     className="w-full"
@@ -288,8 +318,23 @@ function ShoppingCartSection({ cartItems }: { cartItems: CartItemDisplay[] }) {
     if (isLoading) {
         return (
             <section className="order-1 lg:order-2 lg:col-span-3">
-                <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-dashed">
-                    <p className="text-muted-foreground">Loading cart…</p>
+                <div className="space-y-4">
+                    <Skeleton className="h-8 w-48" />
+                    {[0, 1, 2].map((i) => (
+                        <div key={i} className="flex items-center gap-4 rounded-lg border bg-card p-4">
+                            <Skeleton className="h-20 w-20 rounded-md" />
+                            <div className="flex-1 space-y-2">
+                                <Skeleton className="h-4 w-2/3" />
+                                <Skeleton className="h-3 w-1/3" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-8 w-8" />
+                                <Skeleton className="h-4 w-6" />
+                                <Skeleton className="h-8 w-8" />
+                            </div>
+                            <Skeleton className="h-6 w-20" />
+                        </div>
+                    ))}
                 </div>
             </section>
         );

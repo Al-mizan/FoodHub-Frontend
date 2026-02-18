@@ -100,6 +100,16 @@ export const DishDetailModal = memo(function DishDetailModal({
                                 -{dish.discount_percentage}% OFF
                             </Badge>
                         )}
+                        {
+                            dish.discount_price != null && dish.discount_price > 0 && (
+                                <Badge
+                                    variant="outline"
+                                    className="absolute left-3 bottom-3 z-10 border-rose-200 bg-rose-50 text-rose-600 text-xs font-semibold px-2.5 py-1 shadow"
+                                >
+                                    -&#2547;{dish.discount_price.toFixed(2)}
+                                </Badge>
+                            )
+                        }
                     </div>
 
                     {/* Details */}
@@ -166,14 +176,14 @@ export const DishDetailModal = memo(function DishDetailModal({
                 </div>
 
                 {/* Sticky footer — quantity + add to cart */}
-                <div className="border-t bg-background px-5 py-4 sm:px-6">
+                <div className="border-t bg-background px-5 py-4 sm:px-6 -mt-4">
                     <div className="flex items-center justify-between mb-3">
                         {/* Quantity selector */}
                         <div className="flex items-center gap-3">
                             <Button
                                 variant="outline"
                                 size="icon"
-                                className="size-9 rounded-full"
+                                className="size-9 rounded-full cursor-pointer"
                                 onClick={decrement}
                                 disabled={quantity <= 1}
                                 aria-label="Decrease quantity"
@@ -186,7 +196,7 @@ export const DishDetailModal = memo(function DishDetailModal({
                             <Button
                                 variant="outline"
                                 size="icon"
-                                className="size-9 rounded-full"
+                                className="size-9 rounded-full cursor-pointer"
                                 onClick={increment}
                                 aria-label="Increase quantity"
                             >
@@ -201,7 +211,7 @@ export const DishDetailModal = memo(function DishDetailModal({
                     </div>
 
                     <Button
-                        className="w-full gap-2 rounded-xl text-base"
+                        className="w-full gap-2 rounded-xl text-base -mt-1 cursor-pointer"
                         size="lg"
                         onClick={handleAddToCart}
                         disabled={isAdding}

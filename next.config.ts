@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: "sultansdinebd.com",
+      },
+      {
+        protocol: 'https',
+        hostname: "avatars.githubusercontent.com",
       }
     ],
   },

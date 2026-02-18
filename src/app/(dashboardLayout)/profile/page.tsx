@@ -18,6 +18,9 @@ import {
     Loader2,
     Save,
     ChefHat,
+    Users,
+    Package,
+    Tags,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -87,6 +90,7 @@ export default function ProfilePage() {
     }
 
     const isProvider = user.role === "PROVIDER";
+    const isAdmin = user.role === "ADMIN";
 
     return (
         <div className="mx-auto max-w-2xl space-y-8">
@@ -216,6 +220,42 @@ export default function ProfilePage() {
                         </Link>
                     </Button>
                 </div>
+            )}
+
+            {/* Admin Section */}
+            {isAdmin && (
+                <>
+                    <Separator />
+                    <div className="rounded-xl border bg-primary/5 p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <Shield className="size-6 text-primary" />
+                            <h2 className="text-lg font-semibold">Admin Dashboard</h2>
+                        </div>
+                        <p className="mb-4 text-sm text-muted-foreground">
+                            Manage users, orders, and categories across the platform.
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                            <Button asChild variant="outline">
+                                <Link href="/admin/users">
+                                    <Users className="mr-2 size-4" />
+                                    Manage Users
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline">
+                                <Link href="/admin/orders">
+                                    <Package className="mr-2 size-4" />
+                                    View All Orders
+                                </Link>
+                            </Button>
+                            <Button asChild variant="outline">
+                                <Link href="/admin/categories">
+                                    <Tags className="mr-2 size-4" />
+                                    Manage Categories
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );
