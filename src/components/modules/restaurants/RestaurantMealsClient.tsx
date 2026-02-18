@@ -70,7 +70,7 @@ export default function RestaurantMealsClient({
         <section className="py-8">
             {/* Restaurant Header */}
             <div className="mb-6">
-                <h2 className="text-3xl font-medium tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight">
                     {restaurant.restaurant_name}
                 </h2>
                 {restaurant.description && (

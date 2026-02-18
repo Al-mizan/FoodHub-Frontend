@@ -28,6 +28,7 @@ import {
     Store,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 
 /* ── Status config ── */
@@ -56,7 +57,10 @@ const NEXT_STATUS: Record<string, { value: OrderStatus; label: string }[]> = {
         { value: "ON_THE_WAY", label: "Out for Delivery" },
         { value: "CANCELLED", label: "Cancel Order" },
     ],
-    ON_THE_WAY: [{ value: "DELIVERED", label: "Mark Delivered" }],
+    ON_THE_WAY: [
+        { value: "DELIVERED", label: "Mark as Paid" },
+        { value: "CANCELLED", label: "Cancel Order" },
+    ],
     DELIVERED: [],
     CANCELLED: [],
 };
@@ -75,7 +79,7 @@ function ProviderOrderCard({
     onStatusUpdate,
 }: {
     order: ProviderOrder;
-    onStatusUpdate: (orderId: string, status: OrderStatus) => void;
+    onStatusUpdate: (orderId: string, status: OrderStatus, paymentStatus?: string) => void;
 }) {
     const [isUpdating, setIsUpdating] = useState(false);
     const actions = NEXT_STATUS[order.status] || [];
@@ -84,9 +88,11 @@ function ProviderOrderCard({
     const handleChange = async (status: string) => {
         setIsUpdating(true);
         try {
-            await ordersClientService.updateOrderStatus(order.id, status);
+            // When marking as delivered, also set payment as paid
+            const paymentStatus = status === "DELIVERED" ? "PAID" : undefined;
+            await ordersClientService.updateOrderStatus(order.id, status, paymentStatus);
             toast.success(`Order status updated to ${STATUS_LABELS[status as OrderStatus]}`);
-            onStatusUpdate(order.id, status as OrderStatus);
+            onStatusUpdate(order.id, status as OrderStatus, paymentStatus);
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Failed to update status");
         } finally {
@@ -99,10 +105,19 @@ function ProviderOrderCard({
             {/* Header */}
             <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                         <StatusIcon className="size-4" />
                         <Badge variant="outline" className={STATUS_COLORS[order.status]}>
                             {STATUS_LABELS[order.status]}
+                        </Badge>
+                        <Badge variant="outline" className={
+                            order.payment_status === "PAID"
+                                ? "bg-green-500/10 text-green-600 border-green-500/30"
+                                : order.payment_status === "REFUNDED"
+                                    ? "bg-orange-500/10 text-orange-600 border-orange-500/30"
+                                    : "bg-gray-500/10 text-gray-600 border-gray-500/30"
+                        }>
+                            {order.payment_status}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
                             #{order.id.slice(-8).toUpperCase()}
@@ -119,13 +134,13 @@ function ProviderOrderCard({
                         })}
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     <p className="text-lg font-bold tabular-nums">
                         ৳{order.total_amount.toFixed(2)}
                     </p>
                     {actions.length > 0 && (
                         <Select onValueChange={handleChange} disabled={isUpdating}>
-                            <SelectTrigger className="w-[180px]">
+                            <SelectTrigger className="w-full sm:w-[180px]">
                                 <SelectValue placeholder="Update Status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -167,9 +182,11 @@ function ProviderOrderCard({
                     <div className="space-y-1.5">
                         {order.orderItems.map((item) => (
                             <div key={item.id} className="flex items-center gap-2 text-sm">
-                                <img
+                                <Image
                                     src={item.meal.image_url || "/placeholder.png"}
                                     alt={item.meal.name}
+                                    width={32}
+                                    height={32}
                                     className="size-8 rounded object-cover"
                                 />
                                 <span className="flex-1 truncate">{item.meal.name}</span>
@@ -222,9 +239,14 @@ export default function ProviderOrdersPage() {
         return () => clearInterval(interval);
     }, [orders, fetchOrders]);
 
-    const handleStatusUpdate = (orderId: string, newStatus: OrderStatus) => {
+    const handleStatusUpdate = (orderId: string, newStatus: OrderStatus, paymentStatus?: string) => {
         setOrders((prev) =>
-            prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+            prev.map((o) => {
+                if (o.id !== orderId) return o;
+                const updated = { ...o, status: newStatus };
+                if (paymentStatus) updated.payment_status = paymentStatus as "PAID" | "UNPAID" | "REFUNDED";
+                return updated;
+            })
         );
     };
 

@@ -4,6 +4,7 @@ import { useMemo, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, X, ChevronDown, ChevronUp } from "lucide-react";
+import Image from "next/image";
 
 import { useCart } from "@/providers/CartProvider";
 import { ordersClientService } from "@/services/orders-client.service";
@@ -70,69 +71,86 @@ function CartItemRow({
     return (
         <div
             className={cn(
-                "flex items-center gap-4 rounded-lg border bg-card p-4 transition-all duration-300",
+                "flex flex-col sm:flex-row justify-between sm:items-center gap-3 sm:gap-4 rounded-lg border bg-card p-3 sm:p-4 transition-all duration-300",
                 isUpdating && "opacity-70"
             )}
         >
-            <div className="w-20 shrink-0">
-                <AspectRatio ratio={1} className="overflow-hidden rounded-md">
-                    <img
-                        src={item.image}
-                        alt={item.name}
-                        className="size-full object-cover"
-                    />
-                </AspectRatio>
-            </div>
+            <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-16 sm:w-20 shrink-0">
+                    <AspectRatio ratio={1} className="overflow-hidden rounded-md">
+                        <Image
+                            src={item.image}
+                            alt={item.name}
+                            fill
+                            sizes="80px"
+                            className="size-full object-cover"
+                        />
+                    </AspectRatio>
+                </div>
 
-            <div className="min-w-0 flex-1">
-                <h3 className="truncate font-medium">{item.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                    {formatCurrency(item.price)} each
-                </p>
-            </div>
+                <div className="min-w-0 flex-1">
+                    <h3 className="truncate font-medium text-sm sm:text-base">{item.name}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                        {formatCurrency(item.price)} each
+                    </p>
+                </div>
 
-            <div className="flex shrink-0 items-center gap-1">
                 <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
-                    className="size-8"
-                    onClick={handleDecrease}
-                    disabled={item.quantity <= 1 || isUpdating}
-                    aria-label="Decrease quantity"
-                >
-                    <Minus className="size-4" />
-                </Button>
-                <span className="min-w-[2ch] text-center font-medium tabular-nums">
-                    {item.quantity}
-                </span>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="size-8"
-                    onClick={handleIncrease}
+                    className="shrink-0 text-muted-foreground hover:text-destructive sm:hidden"
+                    onClick={() => onRemove(item.id)}
                     disabled={isUpdating}
-                    aria-label="Increase quantity"
+                    aria-label="Remove item"
                 >
-                    <Plus className="size-4" />
+                    <X className="size-4" />
                 </Button>
             </div>
 
-            <div className="shrink-0 text-right">
-                <p className="font-semibold tabular-nums">
-                    {formatCurrency(item.price * item.quantity)}
-                </p>
-            </div>
+            <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
+                <div className="flex shrink-0 items-center gap-1">
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-8"
+                        onClick={handleDecrease}
+                        disabled={item.quantity <= 1 || isUpdating}
+                        aria-label="Decrease quantity"
+                    >
+                        <Minus className="size-4" />
+                    </Button>
+                    <span className="min-w-[2ch] text-center font-medium tabular-nums">
+                        {item.quantity}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="size-8"
+                        onClick={handleIncrease}
+                        disabled={isUpdating}
+                        aria-label="Increase quantity"
+                    >
+                        <Plus className="size-4" />
+                    </Button>
+                </div>
 
-            <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 text-muted-foreground hover:text-destructive"
-                onClick={() => onRemove(item.id)}
-                disabled={isUpdating}
-                aria-label="Remove item"
-            >
-                <X className="size-4" />
-            </Button>
+                <div className="shrink-0 text-right">
+                    <p className="font-semibold tabular-nums">
+                        {formatCurrency(item.price * item.quantity)}
+                    </p>
+                </div>
+
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden sm:inline-flex shrink-0 text-muted-foreground hover:text-destructive"
+                    onClick={() => onRemove(item.id)}
+                    disabled={isUpdating}
+                    aria-label="Remove item"
+                >
+                    <X className="size-4" />
+                </Button>
+            </div>
         </div>
     );
 }
@@ -187,7 +205,7 @@ function CheckoutPanel({
         <aside
             className={cn(
                 "order-2 flex flex-col lg:order-1 lg:col-span-2",
-                "rounded-2xl border bg-background p-6 shadow-lg space-y-6",
+                "rounded-2xl border bg-background p-4 sm:p-6 shadow-lg space-y-4 sm:space-y-6",
                 "lg:sticky lg:top-24 lg:h-fit"
             )}
         >
@@ -321,7 +339,7 @@ function ShoppingCartSection({ cartItems }: { cartItems: CartItemDisplay[] }) {
                 <div className="space-y-4">
                     <Skeleton className="h-8 w-48" />
                     {[0, 1, 2].map((i) => (
-                        <div key={i} className="flex items-center gap-4 rounded-lg border bg-card p-4">
+                        <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 rounded-lg border bg-card p-3 sm:p-4">
                             <Skeleton className="h-20 w-20 rounded-md" />
                             <div className="flex-1 space-y-2">
                                 <Skeleton className="h-4 w-2/3" />
@@ -384,8 +402,8 @@ export default function CartPage() {
     const isEmpty = cartItems.length === 0;
 
     return (
-        <div className="container max-w-7xl mx-auto py-10">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+        <div className="container max-w-7xl mx-auto px-4 py-6 sm:py-10">
+            <div className="grid grid-cols-1 gap-6 lg:gap-8 lg:grid-cols-5">
                 <CheckoutPanel cartItems={cartItems} isEmpty={isEmpty} />
                 <ShoppingCartSection cartItems={cartItems} />
             </div>

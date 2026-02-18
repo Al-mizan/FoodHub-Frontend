@@ -35,6 +35,7 @@ export const dishesService = {
             if (!(res.ok)) {
                 return {
                     data: null,
+                    meta: null,
                     error: { message: `Failed to fetch dishes: ${res.statusText}` },
                 }
             }
@@ -47,12 +48,14 @@ export const dishesService = {
                 });
                 return {
                     data: dishes.data,
+                    meta: dishes.meta ?? null,
                     error: null,
                 }
             }
             else {
                 return {
                     data: null,
+                    meta: null,
                     error: { message: "Failed to fetch dishes" },
                 }
             }
@@ -60,6 +63,7 @@ export const dishesService = {
             console.error(error);
             return {
                 data: null,
+                meta: null,
                 error: { message: "Failed to fetch dishes" },
                 details: error instanceof Error ? error.message : String(error),
             }

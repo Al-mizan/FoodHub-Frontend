@@ -27,6 +27,7 @@ import {
     Tags,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 
 /* ── Category Form Dialog ── */
@@ -196,9 +197,11 @@ function CategoryCard({
         <div className="flex items-center justify-between rounded-xl border bg-card p-4">
             <div className="flex items-center gap-3">
                 {category.icon_url ? (
-                    <img
+                    <Image
                         src={category.icon_url}
                         alt={category.name}
+                        width={40}
+                        height={40}
                         className="size-10 rounded-lg object-cover"
                     />
                 ) : (

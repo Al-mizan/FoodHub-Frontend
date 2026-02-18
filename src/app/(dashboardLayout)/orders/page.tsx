@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { ordersClientService } from "@/services/orders-client.service";
 import { reviewsClientService } from "@/services/reviews-client.service";
+import { revalidateDishesAndRestaurants } from "@/app/actions/revalidate";
 import type { Order, OrderStatus } from "@/types/order.type";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ import {
     ShoppingBag,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 
 /* ── Status helpers ── */
@@ -37,7 +39,7 @@ const STATUS_STEPS: { key: OrderStatus; label: string; icon: React.ElementType }
     { key: "PENDING", label: "Order Placed", icon: Package },
     { key: "PREPARING", label: "Preparing", icon: ChefHat },
     { key: "ON_THE_WAY", label: "Out for Delivery", icon: Truck },
-    { key: "DELIVERED", label: "Delivered", icon: CheckCircle2 },
+    { key: "DELIVERED", label: "Completed", icon: CheckCircle2 },
 ];
 
 const STATUS_COLORS: Record<OrderStatus, string> = {
@@ -46,6 +48,14 @@ const STATUS_COLORS: Record<OrderStatus, string> = {
     ON_THE_WAY: "bg-purple-500/10 text-purple-600 border-purple-500/30",
     DELIVERED: "bg-green-500/10 text-green-600 border-green-500/30",
     CANCELLED: "bg-red-500/10 text-red-600 border-red-500/30",
+};
+
+const STATUS_LABELS: Record<OrderStatus, string> = {
+    PENDING: "Pending",
+    PREPARING: "Preparing",
+    ON_THE_WAY: "Out for Delivery",
+    DELIVERED: "Completed",
+    CANCELLED: "Cancelled",
 };
 
 function getStepIndex(status: OrderStatus): number {
@@ -79,27 +89,24 @@ function OrderTimeline({ status }: { status: OrderStatus }) {
                     <div key={step.key} className="flex items-center">
                         <div className="flex flex-col items-center gap-1">
                             <div
-                                className={`flex size-9 items-center justify-center rounded-full border-2 transition-all ${
-                                    isCompleted
+                                className={`flex size-9 items-center justify-center rounded-full border-2 transition-all ${isCompleted
                                         ? "border-primary bg-primary text-primary-foreground"
                                         : "border-muted-foreground/30 bg-background text-muted-foreground/40"
-                                } ${isCurrent ? "ring-2 ring-primary/30 ring-offset-2" : ""}`}
+                                    } ${isCurrent ? "ring-2 ring-primary/30 ring-offset-2" : ""}`}
                             >
                                 <Icon className="size-4" />
                             </div>
                             <span
-                                className={`text-xs font-medium ${
-                                    isCompleted ? "text-foreground" : "text-muted-foreground/50"
-                                }`}
+                                className={`text-xs font-medium ${isCompleted ? "text-foreground" : "text-muted-foreground/50"
+                                    }`}
                             >
                                 {step.label}
                             </span>
                         </div>
                         {idx < STATUS_STEPS.length - 1 && (
                             <div
-                                className={`mx-1 h-0.5 w-8 sm:w-12 ${
-                                    idx < currentIdx ? "bg-primary" : "bg-muted-foreground/20"
-                                }`}
+                                className={`mx-1 h-0.5 w-8 sm:w-12 ${idx < currentIdx ? "bg-primary" : "bg-muted-foreground/20"
+                                    }`}
                             />
                         )}
                     </div>
@@ -131,11 +138,10 @@ function StarRating({
                     onClick={() => onChange(star)}
                 >
                     <Star
-                        className={`size-6 ${
-                            star <= (hover || value)
+                        className={`size-6 ${star <= (hover || value)
                                 ? "fill-yellow-400 text-yellow-400"
                                 : "text-muted-foreground/30"
-                        }`}
+                            }`}
                     />
                 </button>
             ))}
@@ -182,6 +188,8 @@ function ReviewDialog({
             setRating(0);
             setComment("");
             onReviewSubmitted();
+            // Revalidate cached dishes and restaurants to reflect updated ratings
+            revalidateDishesAndRestaurants();
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Failed to submit review");
         } finally {
@@ -240,6 +248,24 @@ function OrderCard({
         mealId: string;
         mealName: string;
     } | null>(null);
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [isCancelling, setIsCancelling] = useState(false);
+
+    const canCancel = order.status === "PENDING" || order.status === "PREPARING";
+
+    const handleCancel = async () => {
+        setIsCancelling(true);
+        try {
+            await ordersClientService.cancelOrder(order.id);
+            toast.success("Order cancelled successfully");
+            setShowCancelDialog(false);
+            onRefresh();
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Failed to cancel order");
+        } finally {
+            setIsCancelling(false);
+        }
+    };
 
     const reviewedMeals = new Set(order.reviews?.map((r) => r.meal_id) ?? []);
     const restaurantName =
@@ -253,7 +279,7 @@ function OrderCard({
                     <div className="flex items-center gap-2">
                         <h3 className="font-semibold">{restaurantName}</h3>
                         <Badge variant="outline" className={STATUS_COLORS[order.status]}>
-                            {order.status === "ON_THE_WAY" ? "Out for Delivery" : order.status}
+                            {STATUS_LABELS[order.status]}
                         </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground">
@@ -267,9 +293,21 @@ function OrderCard({
                         })}
                     </p>
                 </div>
-                <p className="text-lg font-bold tabular-nums">
-                    ৳{order.total_amount.toFixed(2)}
-                </p>
+                <div className="flex items-center gap-3">
+                    <p className="text-lg font-bold tabular-nums">
+                        ৳{order.total_amount.toFixed(2)}
+                    </p>
+                    {canCancel && (
+                        <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => setShowCancelDialog(true)}
+                        >
+                            <XCircle className="mr-1 size-3.5" />
+                            Cancel
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {/* Timeline */}
@@ -292,9 +330,11 @@ function OrderCard({
                                 key={item.id}
                                 className="flex items-center gap-3"
                             >
-                                <img
+                                <Image
                                     src={item.meal.image_url || "/placeholder.png"}
                                     alt={item.meal.name}
+                                    width={48}
+                                    height={48}
                                     className="size-12 rounded-lg object-cover"
                                 />
                                 <div className="min-w-0 flex-1">
@@ -353,6 +393,37 @@ function OrderCard({
                     onReviewSubmitted={onRefresh}
                 />
             )}
+
+            {/* Cancel confirmation dialog */}
+            <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+                <DialogContent className="sm:max-w-[400px]">
+                    <DialogHeader>
+                        <DialogTitle>Cancel Order</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to cancel this order from{" "}
+                            <span className="font-medium text-foreground">{restaurantName}</span>?
+                            This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowCancelDialog(false)}
+                            disabled={isCancelling}
+                        >
+                            Keep Order
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleCancel}
+                            disabled={isCancelling}
+                        >
+                            {isCancelling && <Loader2 className="mr-2 size-4 animate-spin" />}
+                            Yes, Cancel Order
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

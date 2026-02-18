@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { adminClientService, type AdminUser } from "@/services/admin-client.service";
+import { adminClientService } from "@/services/admin-client.service";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -24,11 +24,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { AdminUser } from "@/types";
 
 const STATUS_BADGE: Record<string, string> = {
     ACTIVATE: "bg-green-500/10 text-green-600 border-green-500/30",
     SUSPENDED: "bg-red-500/10 text-red-600 border-red-500/30",
-    DEACTIVATED: "bg-gray-500/10 text-gray-600 border-gray-500/30",
+    // DEACTIVATED: "bg-gray-500/10 text-gray-600 border-gray-500/30",
 };
 
 const ROLE_BADGE: Record<string, string> = {

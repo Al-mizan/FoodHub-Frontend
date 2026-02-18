@@ -58,7 +58,7 @@ export default function RestaurantsPageClient({
         <section className="py-8">
             {/* Section Header */}
             <div className="mb-6">
-                <h2 className="text-3xl font-medium tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight">
                     All Restaurants
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">

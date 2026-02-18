@@ -42,7 +42,7 @@ const SORT_OPTIONS = [
     { id: "relevance", label: "Relevance", sortBy: "created_at", sortOrder: "desc" },
     { id: "low-to-high", label: "Price: Low to High", sortBy: "price", sortOrder: "asc" },
     { id: "high-to-low", label: "Price: High to Low", sortBy: "price", sortOrder: "desc" },
-    { id: "top-rated", label: "Top Rated", sortBy: "rating_avg", sortOrder: "desc" },
+    // { id: "top-rated", label: "Top Rated", sortBy: "rating_avg", sortOrder: "desc" },
 ] as const;
 
 const PRICE_MIN = 0;

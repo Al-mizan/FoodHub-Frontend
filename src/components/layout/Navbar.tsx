@@ -75,7 +75,7 @@ const Navbar = ({
   className,
 }: NavbarProps) => {
   const { isAuthenticated, isPending } = useAuth();
-  
+
   return (
     <section className={cn("sticky top-0 z-50 bg-background py-4", className)}>
       <div className="container mx-auto px-4">
@@ -96,9 +96,9 @@ const Navbar = ({
               </span>
             </a>
             {/* {isAuthenticated && ( */}
-              <div className="flex items-center ml-30">
-                <AddressModal />
-              </div>
+            <div className="flex items-center ml-36">
+              <AddressModal />
+            </div>
             {/* )} */}
           </div>
           <div className="flex items-center gap-2">
