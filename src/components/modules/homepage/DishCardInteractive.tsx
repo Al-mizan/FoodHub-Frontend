@@ -89,18 +89,17 @@ export const DishCardInteractive = memo(function DishCardInteractive({
                             <div className="flex items-center gap-2">
                                 {dish.discount_percentage && dish.discount_percentage > 0 ? (
                                     <span className="text-lg font-bold text-primary">
-                                        ৳
-                                        {(
-                                            dish.price *
-                                            (1 -
-                                                dish.discount_percentage / 100)
-                                        ).toFixed(2)}
+                                        ৳{(dish.price * (1 - dish.discount_percentage / 100) ).toFixed(2)}
+                                    </span>
+                                ) : dish.discount_price != null && dish.discount_price > 0 ? (
+                                    <span className="text-lg font-bold text-primary">
+                                        ৳{(dish.price - dish.discount_price).toFixed(2)}
                                     </span>
                                 ) : null}
                                 <span
                                     className={`${dish.discount_percentage
                                             ? "text-xs text-muted-foreground line-through"
-                                            : "text-lg font-bold text-primary"
+                                            : dish.discount_price != null && dish.discount_price > 0 ? "text-xs text-muted-foreground line-through" : "text-lg font-bold text-primary"
                                         }`}
                                 >
                                     ৳{dish.price.toFixed(2)}
