@@ -478,7 +478,7 @@ export default function OrdersPage() {
         return (
             <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
                 <p className="text-muted-foreground">Please log in to view your orders.</p>
-                <Button asChild>
+                <Button asChild className="cursor-pointer">
                     <Link href="/login">Log In</Link>
                 </Button>
             </div>
@@ -510,7 +510,7 @@ export default function OrdersPage() {
                     <p className="mb-4 text-sm text-muted-foreground">
                         Start by adding meals to your cart.
                     </p>
-                    <Button asChild>
+                    <Button asChild className="cursor-pointer">
                         <Link href="/">Browse Menu</Link>
                     </Button>
                 </div>

@@ -574,7 +574,7 @@ export default function ProviderMealsPage() {
         return (
             <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
                 <p className="text-muted-foreground">Please log in first.</p>
-                <Button asChild>
+                <Button asChild className="cursor-pointer">
                     <Link href="/login">Log In</Link>
                 </Button>
             </div>
@@ -589,7 +589,7 @@ export default function ProviderMealsPage() {
                 <p className="text-sm text-muted-foreground">
                     You need a provider profile to manage meals.
                 </p>
-                <Button asChild>
+                <Button asChild className="cursor-pointer">
                     <Link href="/provider-profile/create">Become a Provider</Link>
                 </Button>
             </div>
@@ -610,6 +610,7 @@ export default function ProviderMealsPage() {
                         setEditingMeal(null);
                         setFormOpen(true);
                     }}
+                    className="cursor-pointer"
                 >
                     <Plus className="mr-2 size-4" />
                     Add Meal

@@ -6,13 +6,12 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 // import { UtensilsCrossed } from "lucide-react";
 
-const cuisines = await cousinesService.getAllCousines();
-
 interface CuisinesProps {
     activeCuisine?: string;
 }
 
-export default function Cuisines({ activeCuisine }: CuisinesProps) {
+export default async function Cuisines({ activeCuisine }: CuisinesProps) {
+    const cuisines = await cousinesService.getAllCousines();
     return (
         <>
             <div className="font-medium text-3xl mt-4">Cuisines</div>

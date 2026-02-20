@@ -82,7 +82,7 @@ export default function ProfilePage() {
         return (
             <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
                 <p className="text-muted-foreground">Please log in to view your profile.</p>
-                <Button asChild>
+                <Button asChild className="cursor-pointer">
                     <Link href="/login">Log In</Link>
                 </Button>
             </div>

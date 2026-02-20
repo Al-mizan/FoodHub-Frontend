@@ -12,6 +12,7 @@ export const env = createEnv({
         NEXT_PUBLIC_BACKEND_API: z.url(),
         NEXT_PUBLIC_FRONTEND_API: z.url(),
         NEXT_PUBLIC_API_URL: z.url(),
+        NEXT_PUBLIC_AUTH_URL: z.url(),
         // NEXT_PUBLIC_NODE_ENV: z.enum(["development", "production", "test"]), it has buildin feature
     },
     runtimeEnv: {
@@ -22,6 +23,7 @@ export const env = createEnv({
         NEXT_PUBLIC_BACKEND_API: process.env.NEXT_PUBLIC_BACKEND_API,
         NEXT_PUBLIC_FRONTEND_API: process.env.NEXT_PUBLIC_FRONTEND_API,
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+        NEXT_PUBLIC_AUTH_URL: process.env.NEXT_PUBLIC_AUTH_URL,
         // NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
     },
 });

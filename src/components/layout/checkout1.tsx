@@ -236,7 +236,7 @@ const Checkout1 = ({ cartItems = CART_ITEMS, className }: Checkout1Props) => {
   });
 
   const onSubmit = (data: CheckoutFormType) => {
-    console.log(data);
+    // console.log(data);
   };
 
   const onContinue = (value: string) => {

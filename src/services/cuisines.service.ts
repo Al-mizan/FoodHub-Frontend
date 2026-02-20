@@ -1,17 +1,13 @@
 import { env } from "@/env";
 import { Cuisine } from "@/types";
 
-const API_URL = env.API_URL;
+const API_URL = env.NEXT_PUBLIC_API_URL;
 
 export const cousinesService = {
     getAllCousines: async () => {
         try {
             const res = await fetch(`${API_URL}/api/categories`, {  // categories and cousines are same
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["cousines"] },
+                cache: "no-store",
             });
             if (!(res.ok)) {
                 return {

@@ -85,7 +85,7 @@ export default function CreateProviderProfilePage() {
         return (
             <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
                 <p className="text-muted-foreground">Please log in first.</p>
-                <Button asChild>
+                <Button asChild className="cursor-pointer">
                     <Link href="/login">Log In</Link>
                 </Button>
             </div>
@@ -101,10 +101,10 @@ export default function CreateProviderProfilePage() {
                     You already have a provider profile. Manage your restaurant from the dashboard.
                 </p>
                 <div className="flex justify-center gap-3">
-                    <Button asChild>
+                    <Button asChild className="cursor-pointer">
                         <Link href="/provider/meals">Manage Meals</Link>
                     </Button>
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" className="cursor-pointer">
                         <Link href="/provider/orders">View Orders</Link>
                     </Button>
                 </div>
@@ -127,7 +127,7 @@ export default function CreateProviderProfilePage() {
     return (
         <div className="mx-auto max-w-2xl space-y-6">
             <div>
-                <Button variant="ghost" size="sm" asChild className="mb-4">
+                <Button variant="ghost" size="sm" asChild className="mb-4 cursor-pointer">
                     <Link href="/profile">
                         <ArrowLeft className="mr-2 size-4" />
                         Back to Profile

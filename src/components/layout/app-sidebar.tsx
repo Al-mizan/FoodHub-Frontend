@@ -46,7 +46,7 @@ const SORT_OPTIONS = [
 ] as const;
 
 const PRICE_MIN = 0;
-const PRICE_MAX = 10000;
+const PRICE_MAX = 3000;
 const PRICE_STEP = 10;
 
 /* ─── Hook: centralised URL‑param read/write ─── */

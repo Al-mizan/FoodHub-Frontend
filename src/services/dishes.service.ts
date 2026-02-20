@@ -1,7 +1,7 @@
 import { env } from "@/env";
 import { Dish } from "@/types";
 
-const API_URL = env.API_URL;
+const API_URL = env.NEXT_PUBLIC_API_URL;
 
 interface GetDishesParams {
     name?: string;       // backend expects `name` for text search
@@ -26,11 +26,7 @@ export const dishesService = {
                 });
             }
             const res = await fetch(url.toString(), {
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["dishes"] },
+                cache: "no-store",
             });
             if (!(res.ok)) {
                 return {
@@ -73,11 +69,7 @@ export const dishesService = {
     getDishById: async (dishId: string) => {
         try {
             const res = await fetch(`${API_URL}/api/meals/${dishId}`, {
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["dishes"] },
+                cache: "no-store",
             });
             if (!(res.ok)) {
                 return {
@@ -115,11 +107,7 @@ export const dishesService = {
             if (params?.limit) url.searchParams.set("limit", params.limit);
 
             const res = await fetch(url.toString(), {
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["dishes"] },
+                cache: "no-store",
             });
             if (!(res.ok)) {
                 return {
@@ -161,11 +149,7 @@ export const dishesService = {
     getDishesByIdOfRestaurant: async (restaurantId: string, dishId: string) => {
         try {
             const res = await fetch(`${API_URL}/api/providers/${restaurantId}/meals/${dishId}`, {
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["dishes"] },
+                cache: "no-store",
             });
             if (!(res.ok)) {
                 return {

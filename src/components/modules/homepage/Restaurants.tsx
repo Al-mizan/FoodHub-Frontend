@@ -4,9 +4,8 @@ import { Restaurant } from "@/types";
 import Link from "next/link";
 import { RestaurantCard } from "./RestaurantCard";
 
-const restaurants = await restaurantsService.getRestaurants();
-
-export default function Restaurants() {
+export default async function Restaurants() {
+    const restaurants = await restaurantsService.getRestaurants();
     return (
         <section className="py-8">
             {/* Section Header */}

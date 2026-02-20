@@ -265,7 +265,7 @@ export default function ProviderOrdersPage() {
         return (
             <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
                 <p className="text-muted-foreground">Please log in first.</p>
-                <Button asChild>
+                <Button asChild className="cursor-pointer">
                     <Link href="/login">Log In</Link>
                 </Button>
             </div>
@@ -280,7 +280,7 @@ export default function ProviderOrdersPage() {
                 <p className="text-sm text-muted-foreground">
                     You need a provider profile to manage orders.
                 </p>
-                <Button asChild>
+                <Button asChild className="cursor-pointer">
                     <Link href="/provider-profile/create">Become a Provider</Link>
                 </Button>
             </div>

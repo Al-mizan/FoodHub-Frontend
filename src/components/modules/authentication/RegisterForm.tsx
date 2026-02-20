@@ -38,7 +38,7 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
       provider: "google",
       callbackURL: env.NEXT_PUBLIC_FRONTEND_API
     });
-    console.log(data);
+    // console.log(data);
   };
 
   const form = useForm({
@@ -171,9 +171,9 @@ export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
         </form>
       </CardContent>
       <CardFooter className="flex flex-col justify-end gap-5">
-        <Button type="submit" form="register-form" className="w-full">Register</Button>
+        <Button type="submit" form="register-form" className="cursor-pointer w-full">Register</Button>
         <Button onClick={() => handleGoogleLogin()}
-          variant="outline" type="button" className="w-full">
+          variant="outline" type="button" className="cursor-pointer w-full">
           Continue with Google
         </Button>
         <p className="text-center text-sm text-muted-foreground">

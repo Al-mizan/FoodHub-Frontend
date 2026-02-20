@@ -34,7 +34,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
       provider: "google",
       callbackURL:  env.NEXT_PUBLIC_FRONTEND_API
     });
-    console.log(data);
+    // console.log(data);
   };
 
   const form = useForm({
@@ -130,9 +130,9 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         </form>
       </CardContent>
       <CardFooter className="flex flex-col justify-end gap-5">
-        <Button type="submit" form="login-form" className="w-full">Login</Button>
+        <Button type="submit" form="login-form" className="cursor-pointer w-full">Login</Button>
         <Button onClick={() => handleGoogleLogin()}
-          variant="outline" type="button" className="w-full">
+          variant="outline" type="button" className="cursor-pointer w-full">
           Continue with Google
         </Button>
         <p className="text-center text-sm text-muted-foreground">

@@ -1,7 +1,7 @@
 import { env } from "@/env";
 import { Restaurant } from "@/types";
 
-const API_URL = env.API_URL;
+const API_URL = env.NEXT_PUBLIC_API_URL;
 
 interface PaginatedMeta {
     total: number;
@@ -14,11 +14,7 @@ export const restaurantsService = {
     getRestaurants: async () => {
         try {
             const res = await fetch(`${API_URL}/api/providers`, {
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["restaurants"] },
+                cache: "no-store",
             });
             if (!(res.ok)) {
                 return {
@@ -60,11 +56,7 @@ export const restaurantsService = {
             url.searchParams.set("limit", String(limit));
 
             const res = await fetch(url.toString(), {
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["restaurants"] },
+                cache: "no-store",
             });
 
             if (!res.ok) {
@@ -89,11 +81,7 @@ export const restaurantsService = {
     }> => {
         try {
             const res = await fetch(`${API_URL}/api/providers/${id}`, {
-                cache: process.env.NODE_ENV === "development" ? "no-store" : "force-cache",
-                next:
-                    process.env.NODE_ENV === "development"
-                        ? undefined
-                        : { revalidate: 10, tags: ["restaurants"] },
+                cache: "no-store",
             });
 
             if (!res.ok) {
