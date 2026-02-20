@@ -4,6 +4,8 @@ import { dishesService } from "@/services/dishes.service";
 import { Dish, IdProps } from "@/types";
 import RestaurantMealsClient from "@/components/modules/restaurants/RestaurantMealsClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function SpecificRestaurant({ params }: IdProps) {
     const { id } = await params;
 

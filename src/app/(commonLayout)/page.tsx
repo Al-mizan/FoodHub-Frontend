@@ -9,6 +9,8 @@ import Link from "next/link";
 import { HomeProps, Dish } from "@/types";
 import { RestaurantCardSkeleton } from "@/components/modules/homepage/RestaurantCardSkeleton";
 
+export const dynamic = "force-dynamic";
+
 
 export default async function Home({ searchParams }: HomeProps) {
     const params = await searchParams;

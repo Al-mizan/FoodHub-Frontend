@@ -1,6 +1,8 @@
 import { restaurantsService } from "@/services/restaurants.service";
 import RestaurantsPageClient from "@/components/modules/restaurants/RestaurantsPageClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function RestaurantPage() {
     const result = await restaurantsService.getRestaurantsPaginated(1, 12);
 
