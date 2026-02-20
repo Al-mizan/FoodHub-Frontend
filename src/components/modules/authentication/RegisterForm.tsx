@@ -33,12 +33,9 @@ const formSchema = z.object({
 export function RegisterForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
 
-  const handleGoogleLogin = async () => {
-    const data = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: env.NEXT_PUBLIC_FRONTEND_API
-    });
-    // console.log(data);
+  const handleGoogleLogin = () => {
+    // Navigate directly to backend GET endpoint - avoids cross-origin cookie issues (state_mismatch)
+    window.location.href = `${env.NEXT_PUBLIC_BACKEND_API}/api/auth/social-login?provider=google&callbackURL=${encodeURIComponent(env.NEXT_PUBLIC_FRONTEND_API)}`;
   };
 
   const form = useForm({
