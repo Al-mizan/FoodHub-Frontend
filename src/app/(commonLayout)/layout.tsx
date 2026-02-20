@@ -1,5 +1,4 @@
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { Navbar } from "@/components/layout/Navbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cousinesService } from "@/services/cuisines.service";
 
@@ -19,7 +18,7 @@ export default async function CommonLayout({
             <SidebarProvider>
                 <div className="flex flex-1">
                     <AppSidebar cuisines={cuisines} />
-                    <main className="flex-1 p-4">
+                    <main className="flex-1 min-w-0 p-4">
                         {children}
                     </main>
                 </div>

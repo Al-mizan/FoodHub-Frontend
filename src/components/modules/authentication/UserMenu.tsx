@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, User, Settings, MapPin, Loader2, ShoppingBag, ChefHat, Store, Shield, Users, Package, Tags } from "lucide-react";
+import { LogOut, User, MapPin, Loader2, ShoppingBag, ChefHat, Store, Users, Package, Tags } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {

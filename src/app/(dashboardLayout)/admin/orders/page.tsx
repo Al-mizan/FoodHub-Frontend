@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { adminClientService, type AdminOrder } from "@/services/admin-client.service";
+import { adminClientService } from "@/services/admin-client.service";
+import type { AdminOrder } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";

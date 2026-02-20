@@ -4,8 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import {
     adminClientService,
-    type AdminCategory,
 } from "@/services/admin-client.service";
+import type { AdminCategory } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -215,7 +215,7 @@ function CategoryCard({
                 </div>
             </div>
             <div className="flex items-center gap-2">
-                <Badge variant={category.is_active ? "default" : "secondary"}>
+                <Badge variant={category.is_active ? "default" : "secondary"} className="hidden md:block">
                     {category.is_active ? "Active" : "Inactive"}
                 </Badge>
                 <Button

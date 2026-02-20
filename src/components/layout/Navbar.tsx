@@ -1,23 +1,23 @@
 "use client";
 
-import { Menu } from "lucide-react";
+// import { Menu } from "lucide-react";
 import logoImage from "../../../public/assets/logoImage.ico";
 import { cn } from "@/lib/utils";
 import Image, { type StaticImageData } from "next/image";
 
-import {
-  Accordion,
-} from "@/components/ui/accordion";
+// import {
+//   Accordion,
+// } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
 } from "@/components/ui/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+// import {
+//   Sheet,
+//   SheetContent,
+//   SheetHeader,
+//   SheetTitle,
+//   SheetTrigger,
+// } from "@/components/ui/sheet";
 import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 import { useAuth } from "@/hooks/useAuth";
@@ -60,14 +60,14 @@ const Navbar = ({
     url: "/",
     src: logoImage,
     alt: "logo",
-    title: "FoodHub",
+    title: "Khabo",
   },
-  menu = [
-    {
-      title: "Address",
-      url: "/address",
-    }
-  ],
+  // menu = [
+  //   {
+  //     title: "Address",
+  //     url: "/address",
+  //   }
+  // ],
   auth: authConfig = {
     login: { title: "Login", url: "/login" },
     signup: { title: "Register", url: "/register" },
@@ -133,11 +133,28 @@ const Navbar = ({
                 width={32}
                 height={32}
               />
+              <span className="text-lg font-semibold tracking-tighter">
+                {logo.title}
+              </span>
             </a>
             <div className="flex items-center gap-2">
               <CartIcon />
-              {isAuthenticated && <UserMenu />}
-              <Sheet>
+              <ModeToggle />
+              {isPending ? (
+                <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
+              ) : isAuthenticated ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={authConfig.login.url}>{authConfig.login.title}</Link>
+                  </Button>
+                  {/* <Button asChild size="sm">
+                    <Link href={authConfig.signup.url}>{authConfig.signup.title}</Link>
+                  </Button> */}
+                </>
+              )}
+              {/* <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="outline" size="icon">
                     <Menu className="size-4" />
@@ -170,6 +187,7 @@ const Navbar = ({
                       <div className="flex flex-col gap-3">
                         <AddressModal />
                         <ModeToggle />
+                        
                       </div>
                     ) : (
                       <div className="flex flex-col gap-3">
@@ -184,7 +202,7 @@ const Navbar = ({
                     )}
                   </div>
                 </SheetContent>
-              </Sheet>
+              </Sheet> */}
             </div>
           </div>
         </div>
@@ -193,14 +211,14 @@ const Navbar = ({
   );
 };
 
-const renderMobileMenuItem = (item: MenuItem) => {
+// const renderMobileMenuItem = (item: MenuItem) => {
 
-  return (
-    <Link key={item.title} href={item.url} className="text-md font-semibold">
-      {item.title}
-    </Link>
-  );
-};
+//   return (
+//     <Link key={item.title} href={item.url} className="text-md font-semibold">
+//       {item.title}
+//     </Link>
+//   );
+// };
 
 
 export { Navbar };

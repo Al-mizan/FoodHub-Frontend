@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { Cuisine } from "@/types";
 
 const API_URL = env.API_URL;
 
@@ -20,6 +21,8 @@ export const cousinesService = {
             }
             const cousines = await res.json();
             if (cousines.success) {
+                // remove categories with is_active = false
+                cousines.data = cousines.data.filter((cuisine: Cuisine) => cuisine.is_active);
                 return {
                     data: cousines.data,
                     error: null,

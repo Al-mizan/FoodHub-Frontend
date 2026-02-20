@@ -16,7 +16,7 @@ export default function Cuisines({ activeCuisine }: CuisinesProps) {
     return (
         <>
             <div className="font-medium text-3xl mt-4">Cuisines</div>
-            <ScrollArea className="w-[80vw] rounded-md border whitespace-nowrap">
+            <ScrollArea className="w-[91vw] md:w-[66vw] lg:w-[80vw] responsive-width rounded-md border whitespace-nowrap">
                 <div className="flex w-max space-x-5 p-4 text-center">
                     {/* if the message is error  */}
                     {cuisines?.error?.message ? (

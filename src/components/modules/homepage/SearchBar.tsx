@@ -3,9 +3,12 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useState, useTransition } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, X, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Search, X, Loader2, SlidersHorizontal } from "lucide-react";
 
 export default function SearchBar() {
+    const { setOpenMobile } = useSidebar();
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
@@ -70,28 +73,40 @@ export default function SearchBar() {
     };
 
     return (
-        <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input
-                placeholder="Search for dishes or cuisines..."
-                value={value}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                className="pl-10 pr-10 h-12 text-base rounded-xl border-2 transition-colors focus-visible:border-primary"
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                {isPending ? (
-                    <Loader2 className="size-4 animate-spin text-muted-foreground" />
-                ) : value ? (
-                    <button
-                        onClick={handleClear}
-                        className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        aria-label="Clear search"
-                    >
-                        <X className="size-4" />
-                    </button>
-                ) : null}
+        <div className="flex items-center gap-2 w-full">
+            <div className="relative flex-1 min-w-0">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search for dishes or cuisines..."
+                    value={value}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyDown}
+                    className="pl-10 pr-10 h-12 text-base rounded-xl border-2 transition-colors focus-visible:border-primary"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {isPending ? (
+                        <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    ) : value ? (
+                        <button
+                            onClick={handleClear}
+                            className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                            aria-label="Clear search"
+                        >
+                            <X className="size-4" />
+                        </button>
+                    ) : null}
+                </div>
             </div>
+            {/* Filter button — visible only on mobile (below md) */}
+            <Button
+                variant="outline"
+                size="icon"
+                className="md:hidden h-12 w-12 shrink-0 rounded-xl border-2"
+                onClick={() => setOpenMobile(true)}
+                aria-label="Open filters"
+            >
+                <SlidersHorizontal className="size-5" />
+            </Button>
         </div>
     );
 }
