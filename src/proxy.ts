@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from 'next/server'
-import { userService } from './services/user.service';
 import { Roles } from './constants/roles';
 
 /* ─────────────────────── Route Access Map ─────────────────────── *
@@ -43,8 +42,17 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // ── 2. Fetch session ──
-    const { data } = await userService.getSession();
+    // ── 2. Fetch session from local auth proxy ──
+    const sessionResponse = await fetch(`${request.nextUrl.origin}/api/auth/get-session`, {
+        method: 'GET',
+        headers: {
+            Cookie: request.headers.get('cookie') ?? '',
+            Accept: 'application/json',
+        },
+        cache: 'no-store',
+    });
+
+    const data = sessionResponse.ok ? await sessionResponse.json() : null;
     const user = data?.user;
     const role: string | undefined = user?.role;
 

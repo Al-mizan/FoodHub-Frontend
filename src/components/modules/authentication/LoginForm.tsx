@@ -19,7 +19,6 @@ import { useRouter } from "next/navigation";
 
 
 import * as z from "zod";
-import { env } from "@/env";
 
 const formSchema = z.object({
   email: z.email(),
@@ -29,9 +28,11 @@ const formSchema = z.object({
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
 
-  const handleGoogleLogin = () => {
-    // Navigate directly to backend GET endpoint - avoids cross-origin cookie issues (state_mismatch)
-    window.location.href = `${env.NEXT_PUBLIC_BACKEND_API}/api/auth/social-login?provider=google&callbackURL=${encodeURIComponent(env.NEXT_PUBLIC_FRONTEND_API)}`;
+  const handleGoogleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
   };
 
   const form = useForm({

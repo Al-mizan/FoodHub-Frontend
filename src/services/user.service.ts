@@ -1,19 +1,16 @@
-import { env } from "@/env";
 import { cookies } from "next/headers";
-
-const AUTH_URL = env.NEXT_PUBLIC_AUTH_URL;
 
 export const userService = {
     getSession: async () => {
         try {
             const cookieStore = await cookies();
-            const res = await fetch(`${AUTH_URL}/get-session`, {
+            const res = await fetch("/api/auth/get-session", {
                 headers: {
                     Cookie: cookieStore.toString(),
-                    cache: "no-store",
                 },
                 method: "GET",
                 credentials: "include",
+                cache: "no-store",
             });
             const session = await res.json();
             if (session === null) {

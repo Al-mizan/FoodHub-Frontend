@@ -6,24 +6,18 @@ export const env = createEnv({
         BACKEND_API: z.url(),
         FRONTEND_API: z.url(),
         API_URL: z.url(),
-        AUTH_URL: z.url(),
     },
     client: {
         NEXT_PUBLIC_BACKEND_API: z.url(),
-        NEXT_PUBLIC_FRONTEND_API: z.url(),
         NEXT_PUBLIC_API_URL: z.url(),
-        NEXT_PUBLIC_AUTH_URL: z.url(),
         // NEXT_PUBLIC_NODE_ENV: z.enum(["development", "production", "test"]), it has buildin feature
     },
     runtimeEnv: {
         BACKEND_API: process.env.BACKEND_API,
         FRONTEND_API: process.env.FRONTEND_API,
         API_URL: process.env.API_URL,
-        AUTH_URL: process.env.AUTH_URL,
         NEXT_PUBLIC_BACKEND_API: process.env.NEXT_PUBLIC_BACKEND_API,
-        NEXT_PUBLIC_FRONTEND_API: process.env.NEXT_PUBLIC_FRONTEND_API,
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-        NEXT_PUBLIC_AUTH_URL: process.env.NEXT_PUBLIC_AUTH_URL,
         // NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
     },
 });

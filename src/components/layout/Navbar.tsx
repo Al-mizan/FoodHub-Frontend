@@ -76,6 +76,9 @@ const Navbar = ({
 }: NavbarProps) => {
   const { isAuthenticated, isPending } = useAuth();
 
+  // Show skeleton until session is resolved
+  const showSkeleton = isPending;
+
   return (
     <section className={cn("sticky top-0 z-50 bg-background py-4", className)}>
       <div className="container mx-auto px-4">
@@ -104,7 +107,7 @@ const Navbar = ({
           <div className="flex items-center gap-2">
             <CartIcon />
             <ModeToggle />
-            {isPending ? (
+            {showSkeleton ? (
               <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
             ) : isAuthenticated ? (
               <UserMenu />
@@ -140,7 +143,7 @@ const Navbar = ({
             <div className="flex items-center gap-2">
               <CartIcon />
               <ModeToggle />
-              {isPending ? (
+              {showSkeleton ? (
                 <div className="h-9 w-20 animate-pulse rounded-md bg-muted" />
               ) : isAuthenticated ? (
                 <UserMenu />

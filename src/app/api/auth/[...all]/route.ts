@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 function getBackendUrl() {
-    // Use NEXT_PUBLIC_BACKEND_API since server-only BACKEND_API may point to localhost
-    const url = process.env.NEXT_PUBLIC_BACKEND_API;
-    if (!url) throw new Error("NEXT_PUBLIC_BACKEND_API is not set");
+    // Prefer server-only env var; fall back to NEXT_PUBLIC_ variant
+    // const url = process.env.BACKEND_API || process.env.NEXT_PUBLIC_BACKEND_API;
+    const url =
+        process.env.NODE_ENV === "production"
+            ? process.env.NEXT_PUBLIC_BACKEND_API
+            : process.env.BACKEND_API;
+    if (!url) throw new Error("BACKEND_API (or NEXT_PUBLIC_BACKEND_API) is not set");
     return url.replace(/\/+$/, ""); // remove trailing slash
 }
 
@@ -20,11 +24,17 @@ async function handler(req: NextRequest) {
     if (cookieHeader) forwardHeaders.set("cookie", cookieHeader);
     const contentType = req.headers.get("content-type");
     if (contentType) forwardHeaders.set("content-type", contentType);
-    forwardHeaders.set("accept", "application/json");
+    forwardHeaders.set("accept", req.headers.get("accept") ?? "application/json");
+    // better-auth requires Origin header for CSRF / trusted origins
+    const requestOrigin = req.headers.get("origin") ?? url.origin;
+    forwardHeaders.set("origin", requestOrigin);
 
     const fetchOptions: RequestInit = {
         method: req.method,
         headers: forwardHeaders,
+        // CRITICAL: prevent fetch from following redirects so we can forward
+        // the raw 302 + Set-Cookie headers back to the browser
+        redirect: "manual",
     };
 
     // Forward body for non-GET/HEAD requests
@@ -41,7 +51,11 @@ async function handler(req: NextRequest) {
         const resContentType = response.headers.get("content-type");
         if (resContentType) responseHeaders.set("content-type", resContentType);
 
-        // Fix Set-Cookie domain - remove backend domain so cookie is set on frontend domain
+        // Forward Location header for redirects (OAuth flow needs this)
+        const location = response.headers.get("location");
+        if (location) responseHeaders.set("location", location);
+
+        // Fix Set-Cookie domain — remove backend domain so cookie is set on frontend domain
         const setCookieHeaders = response.headers.getSetCookie?.() ?? [];
         for (const cookie of setCookieHeaders) {
             // Remove Domain attribute so it defaults to the frontend domain
