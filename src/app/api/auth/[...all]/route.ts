@@ -1,46 +1,54 @@
-import { env } from "@/env";
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_AUTH_URL = env.BACKEND_API;
+function getBackendUrl() {
+    // Use NEXT_PUBLIC_BACKEND_API since server-only BACKEND_API may point to localhost
+    const url = process.env.NEXT_PUBLIC_BACKEND_API;
+    if (!url) throw new Error("NEXT_PUBLIC_BACKEND_API is not set");
+    return url.replace(/\/+$/, ""); // remove trailing slash
+}
 
 async function handler(req: NextRequest) {
+    const backendUrl = getBackendUrl();
     const url = new URL(req.url);
     // Forward the path after /api/auth to the backend
     const pathAfterAuth = url.pathname; // e.g., /api/auth/get-session
-    const targetUrl = `${BACKEND_AUTH_URL}${pathAfterAuth}${url.search}`;
+    const targetUrl = `${backendUrl}${pathAfterAuth}${url.search}`;
 
-    const headers = new Headers(req.headers);
-    // Remove host header so backend gets its own host
-    headers.delete("host");
+    // Only forward safe headers — avoid accept-encoding, host, etc.
+    const forwardHeaders = new Headers();
+    const cookieHeader = req.headers.get("cookie");
+    if (cookieHeader) forwardHeaders.set("cookie", cookieHeader);
+    const contentType = req.headers.get("content-type");
+    if (contentType) forwardHeaders.set("content-type", contentType);
+    forwardHeaders.set("accept", "application/json");
 
     const fetchOptions: RequestInit = {
         method: req.method,
-        headers,
-        // @ts-expect-error - duplex is needed for streaming request bodies
-        duplex: "half",
+        headers: forwardHeaders,
     };
 
     // Forward body for non-GET/HEAD requests
     if (req.method !== "GET" && req.method !== "HEAD") {
-        fetchOptions.body = req.body;
+        fetchOptions.body = await req.text();
     }
 
     try {
         const response = await fetch(targetUrl, fetchOptions);
 
-        const responseHeaders = new Headers(response.headers);
+        const responseHeaders = new Headers();
+
+        // Copy content-type
+        const resContentType = response.headers.get("content-type");
+        if (resContentType) responseHeaders.set("content-type", resContentType);
 
         // Fix Set-Cookie domain - remove backend domain so cookie is set on frontend domain
         const setCookieHeaders = response.headers.getSetCookie?.() ?? [];
-        if (setCookieHeaders.length > 0) {
-            responseHeaders.delete("set-cookie");
-            for (const cookie of setCookieHeaders) {
-                // Remove Domain attribute so it defaults to the frontend domain
-                const fixedCookie = cookie
-                    .replace(/;\s*Domain=[^;]*/gi, "")
-                    .replace(/;\s*SameSite=[^;]*/gi, "; SameSite=Lax");
-                responseHeaders.append("set-cookie", fixedCookie);
-            }
+        for (const cookie of setCookieHeaders) {
+            // Remove Domain attribute so it defaults to the frontend domain
+            const fixedCookie = cookie
+                .replace(/;\s*Domain=[^;]*/gi, "")
+                .replace(/;\s*SameSite=[^;]*/gi, "; SameSite=Lax");
+            responseHeaders.append("set-cookie", fixedCookie);
         }
 
         const body = await response.arrayBuffer();
